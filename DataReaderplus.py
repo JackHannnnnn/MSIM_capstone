@@ -132,7 +132,12 @@ class DataReader(object):
                 user_contact.append(contacted)
         return user_contact
     
+    def get_score_data(self):
+        """return the score table with user_id, technology_id, total_score  """
+        scoreData = pd.read_sql("SELECT user_id, technology_id, total_score FROM score", con = con)        
+        return scoreData
     
+     
 #print DataReader().get_user_num()
 #print DataReader().get_user_id()
 #print DataReader().get_technology_num()
@@ -146,7 +151,7 @@ class DataReader(object):
 #print DataReader().get_contentview('5260234c-9878-4d49-9d26-46b2d4718e13')   #test get_contentview
 #print DataReader().get_tech_clicked('57d97d4a-23b8-4148-a0a5-004a0a2ae3a6')  #test get_tech_clicked
 #print DataReader().get_contacted('56c31212-73e0-43b9-9195-02080a2a6be7')     #test get_contacted
-
+#print DataReader().get_score_data()                                          #test get_score_data
 
 def find_techid_index(this_tech_id, technology_id):
     """ given a list of technology id, list of all ids for technologies. Find the technology id index (natural number)"""

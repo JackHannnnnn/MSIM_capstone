@@ -69,6 +69,9 @@ score.reset_index(inplace =True)
 ####################################################################################
 #create mysql table score 
 
+#drop score table if exists
+cur.execute('DROP TABLE IF EXISTS score')
+print "Score Table is dropped" 
 
 cur.execute('''create table Score(
                     score_id int, 

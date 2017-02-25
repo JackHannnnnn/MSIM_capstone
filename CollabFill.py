@@ -2,19 +2,13 @@
 """
 Spyder Editor
 
-This is a temporary script file.
 """
 import pandas as pd
+import ScoreCalculate as sc
 import DataReaderplus as dr
 
-dataReader = dr.DataReader()
-con = dataReader.con
+scoreData = dr.DataReader().get_score_data() # read data from the Score table
 
-score = pd.read_sql("SELECT user_id, technology_id, total_score FROM score", con = con)  
-reshape = score.pivot(index='user_id', columns = 'technology_id', values = 'total_score')
-print reshape
+score = scoreData.pivot(index='user_id', columns = 'technology_id', values = 'total_score') # reshape score table 
+print score
 
-#def get_score_data():
-#    """return the score table with user_id, technology_id, total_score  """
-#    scoreData = pd.read_sql("SELECT user_id, technology_id, total_score FROM score", con = con)        
-#    return scoreData

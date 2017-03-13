@@ -37,7 +37,7 @@ new_scoredf=score_df.copy()
 for i in new_scoredf.index:
     for j in new_scoredf.columns:
         if new_scoredf.ix[i,j]==0:
-            numerator=sum(new_scoredf.ix[i]*similarities_tech_df.ix[j])
+            numerator=sum(score_df.ix[i]*similarities_tech_df.ix[j])
             denominator=sum(similarities_tech_df.ix[j])-1
             if denominator==0:
                 new_scoredf.ix[i,j]=0

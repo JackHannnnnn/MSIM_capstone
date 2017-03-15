@@ -103,6 +103,16 @@ class DataReader(object):
         self.activities = pd.read_sql( "SELECT user_id, details FROM user_activities", con = self.con) 
         return self.activities
     
+     def extract_interacted_technology(self, user_id):
+        """ return the list of all technology ids which have interaction with the user"""         
+        query6 = "SELECT technology_id FROM score WHERE user_id = '%s'" %(user_id)
+        self.cur.execute(query6)              
+        rows = self.cur.fetchall()    
+        tech_id_list = []
+        for row in rows:
+            tech_id_list.append(row[0])
+        return tech_id_list
+    
 
     # def get_contentview(self, user_id):
     #     """given one user id, find all his/her content view (id of technology). Return a list of technology ids """

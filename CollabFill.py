@@ -50,4 +50,5 @@ print score_pred_df.head
 
 #pred_df = pd.DataFrame({index:score_df.loc[index].nlargest(5).index.tolist() for index in score_df.index}).T
 for index in score_pred_df.index:
-    print score_pred_df.loc[index].nlargest(5) # find the largest 5 scores for each user
+    pred_item = score_pred_df.loc[index] 
+    print pred_item[pred_item!=0.0].nlargest(5) # find the largest 5 scores for each user

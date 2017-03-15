@@ -103,6 +103,11 @@ class DataReader(object):
         self.activities = pd.read_sql( "SELECT user_id, details FROM user_activities", con = self.con) 
         return self.activities
     
+    def get_all_keywords_table(self):
+        self.all_keywords = pd.read_sql( "SELECT * FROM all_keywords", con = self.con) 
+        return self.all_keywords
+    
+    
      def extract_interacted_technology(self, user_id):
         """ return the list of all technology ids which have interaction with the user"""         
         query6 = "SELECT technology_id FROM score WHERE user_id = '%s'" %(user_id)

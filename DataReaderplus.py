@@ -113,6 +113,18 @@ class DataReader(object):
             tech_id_list.append(row[0])
         return tech_id_list
     
+    def extract_interacted_keywords(self, user_id):
+        """ return the list of all technology ids which have interaction with the user"""         
+        tech_id_list = self.extract_interacted_technology(user_id)
+        query7 ="SELECT * FROM technology_keywords"  
+        self.cur.execute (query7) 
+        rows = self.cur.fetchall() 
+        keywords_list = []        
+        for row in rows:
+            if row[1] in tech_id_list:
+                keywords_list.append(row[0])             
+        return keywords_list
+    
 
     # def get_contentview(self, user_id):
     #     """given one user id, find all his/her content view (id of technology). Return a list of technology ids """

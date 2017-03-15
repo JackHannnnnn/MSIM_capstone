@@ -125,6 +125,16 @@ class DataReader(object):
                 keywords_list.append(row[0])             
         return keywords_list
     
+    
+    def extract_keywords(self, technology_id):
+        """ return keywords of given technology id"""         
+        query8 ="SELECT keyword_id FROM technology_keywords WHERE technology_id = '%s'" %(technology_id)
+        self.cur.execute (query8) 
+        rows = self.cur.fetchall() 
+        keywords_list = []        
+        for row in rows:
+            keywords_list.append(row[0])             
+        return keywords_list
 
     # def get_contentview(self, user_id):
     #     """given one user id, find all his/her content view (id of technology). Return a list of technology ids """

@@ -41,7 +41,7 @@ def calculate_score():
     score.loc[train_index, 'whether_train'] = 1
 
     #############################weight##############
-    weight = np.array([[1, 1, 1]]).T
+    weight = np.array([[5, 1, 2]]).T
     #################################################
 
     #add total_score

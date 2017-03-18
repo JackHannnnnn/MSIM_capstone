@@ -59,7 +59,7 @@ for user in unique_users:
     
     
 # Given user id to make recommendation for the top 5 most similar technologies 
-def recomend_top_similarity(user_id):
+def recommend_top_similarity(user_id,reco_count):
     """ Given user_id make recommendation from the tech_ids which excludes previously interacted tech_ids"""
     tech_similarity = {}
     user_preference =user_profiles[user_id]
@@ -70,11 +70,11 @@ def recomend_top_similarity(user_id):
     #iterate through all non interacted tech_ids
     for tech in unknown_tech_ids:
         tech_similarity[tech] = cosine_similarity(user_preference.reshape(1,-1), tech_profiles[tech].reshape(1,-1))
-    sorted_similarity = sorted(tech_similarity, key = tech_similarity.get)
+    sorted_similarity = sorted(tech_similarity, key = tech_similarity.get,reverse=True)
     #print sorted_similarity
-    top_similarity = sorted_similarity[:5]
+    top_similarity = sorted_similarity[:reco_count]
     return top_similarity
 
 #test
-recomend_top_similarity('528f575a-c6a8-4fdb-9bd7-4662d4718e13')
+recommend_top_similarity('528f575a-c6a8-4fdb-9bd7-4662d4718e13',5)
 

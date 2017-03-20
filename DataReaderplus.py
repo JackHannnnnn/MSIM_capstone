@@ -85,6 +85,19 @@ class DataReader(object):
         this_matchinglist[index_list] = 1 # set value equals 1 if this technology has some certain keyword
         # np.set_printoptions(threshold='nan') # print all values in array when it is too long
         return np.array(this_matchinglist)
+    
+    
+    def cal_user_keywords(self, keywords, user_id):
+        """given user_id, mapping user keywords with all keywords return, binary vector"""     
+        user_keywords = self.get_user_keywords(user_id)
+        index_dict = dict((value, idx) for idx, value in enumerate(keywords))
+        index_list = [index_dict[x] for x in user_keywords] # return the index of each keyword id for this technology in the full list of keywords
+        this_matchinglist = np.zeros(len(keywords))  # initialize the matching list of this technology 
+        this_matchinglist[index_list] = 1 # set value equals 1 if this technology has some certain keyword
+        # np.set_printoptions(threshold='nan') # print all values in array when it is too long
+        return np.array(this_matchinglist)
+    
+    
 
     def get_score_data(self):
         """return the score table with user_id, technology_id, total_score  """

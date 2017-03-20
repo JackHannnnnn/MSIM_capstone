@@ -7,8 +7,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 #get score table
 scoreData = dr.DataReader().get_score_data()
 
-#get all user in score table
-unique_users = scoreData.user_id.unique()
+#get interacted user in score table
+interacted_users = scoreData.user_id.unique()
+
+#get all users in data base
+all_users = dr.DataReader().get_user_id()
 
 #get list of all keywords
 all_keywords= dr.DataReader().get_all_keywords()
@@ -29,12 +32,12 @@ for tech in all_tech_ids:
 #############user profiling mapping with all_keywords############# 
 #dictionary to store user profile with user_id as key
 
-user_profiles = {}
+user_profiles_interacted = {}
 
 
 
 #iterate through all users in score table
-for user in unique_users:  
+for user in interacted_users:  
     #initial weight_sum 
     weight_sum = 0
     #initial user_keywords_sums
@@ -55,7 +58,26 @@ for user in unique_users:
     # mean of vector as user profile
     user_profiles[user] = user_keywords_sum/weight_sum
     
+    
+# user profiles built on self-identified keywords by users
+#empty dictionary to store user_profiles
+user_profiles_keyword = {}
 
+#extract user_keywords mapped with all_keywords
+for user in all_users:     
+    user_profiles_keyword[user] = dr.DataReader().cal_user_keywords(all_keywords, user)
+
+#user profiles combines user self-identified keywords and interacted keywords
+#empty dictionary to store user_profiles
+user_profiles_comb = {}
+#if user not in interacted user list using user profiles based on user_profiles_keywords 
+for user in all_users:
+    if user not in interacted_users:
+        user_profiles_comb[user] = dr.DataReader().cal_user_keywords(all_keywords, user)
+    else:  
+     #if user in interacted user list using user profiles based on user_profiles_keywords plus user_profiles_interacted
+        user_profiles_comb[user] = (user_profiles_interacted[user]+user_profiles_keyword[user])/2    
+    
     
     
 # Given user id to make recommendation for the top 5 most similar technologies 
@@ -73,7 +95,14 @@ def recommend_top_similarity(user_id,reco_count):
     sorted_similarity = sorted(tech_similarity, key = tech_similarity.get,reverse=True)
     #print sorted_similarity
     top_similarity = sorted_similarity[:reco_count]
-    return top_similarity
+    emailed = []
+    unemailed = []
+    for tech in top_similarity:
+        if tech in dr.DataReader().get_emailed_tech_ids(user_id):
+            emailed.append(tech)
+        else: 
+            unemailed.append(tech)
+    print 'emailed = {}， unemailed = {}\n'.format(emailed, unemailed)  
 
 #test
 recommend_top_similarity('528f575a-c6a8-4fdb-9bd7-4662d4718e13',5)

@@ -136,6 +136,35 @@ class DataReader(object):
         for row in rows:
             keywords_list.append(row[0])             
         return keywords_list
+    
+    
+    def get_contacted_tech_ids (self, user_id):
+        
+        """return contacted technology_ids while input user_id"""
+        query9 ="SELECT technology_id FROM contacts WHERE user_id = '%s'" %(user_id)
+        self.cur.execute (query9) 
+        rows = self.cur.fetchall() 
+        contacted_tech_ids = []        
+        for row in rows:
+            contacted_tech_ids.append(row[0])             
+        return contacted_tech_ids
+    
+    
+    def get_emailed_tech_ids (self, user_id):
+        
+        """return contacted technology_ids while input user_id"""
+        query10 ="SELECT included_technology_ids FROM email_clicks WHERE user_id = '%s'" %(user_id)
+        self.cur.execute (query10) 
+        rows = self.cur.fetchall() 
+        included_tech_ids = []        
+        for row in rows:
+            split_tech_ids = row[0].split(',') 
+            included_tech_ids = list(map(int,split_tech_ids))
+            included_tech_ids.extend(included_tech_ids)   
+            emailed_tech_ids = list(set(included_tech_ids))                 
+        return emailed_tech_ids
+    
+    
 
     # def get_contentview(self, user_id):
     #     """given one user id, find all his/her content view (id of technology). Return a list of technology ids """

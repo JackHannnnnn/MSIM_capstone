@@ -174,7 +174,7 @@ class DataReader(object):
             split_tech_ids = row[0].split(',') 
             included_tech_ids = list(map(int,split_tech_ids))
             included_tech_ids.extend(included_tech_ids)   
-            emailed_tech_ids = list(set(included_tech_ids))                 
+        emailed_tech_ids = list(set(included_tech_ids))                 
         return emailed_tech_ids
     
     def get_user_keywords (self, user_id):

@@ -104,7 +104,7 @@ class DataReader(object):
         return self.activities
     
         
-     def extract_interacted_technology(self, user_id):
+    def extract_interacted_technology(self, user_id):
         """ return the list of all technology ids which have interaction with the user"""         
         query6 = "SELECT technology_id FROM score WHERE user_id = '%s'" %(user_id)
         self.cur.execute(query6)              

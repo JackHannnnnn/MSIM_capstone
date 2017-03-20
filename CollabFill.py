@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-Author: Yao Zhou
-"""
+
+# coding: utf-8
+
 import pandas as pd
 import numpy as np
 import ScoreCalculate as sc
@@ -11,25 +10,44 @@ from sklearn.metrics.pairwise import cosine_similarity
 from scipy import sparse
 
 
+score = sc.calculate_score()
+sc.create_table(score)
 scoreData = dr.DataReader().get_score_data() # read data from the Score table
 score_df = scoreData.pivot(index='user_id', columns = 'technology_id', values = 'total_score') # reshape score table 
-score_df = score_df.fillna(0) # fill NaN data with 0
-score_spare = sparse.csr_matrix(score_df) 
-similarities = cosine_similarity(score_spare) # pairwise cosine similarity
+
+# calculate the baseline table 
+mu = score_df.stack().mean() # average of total scores
+baseline_df = score_df.copy()
+for user in baseline_df.index:
+    for item in baseline_df.columns:
+        user_dev = score_df.loc[user].mean() - mu
+        item_dev = score_df[item].mean()-mu
+        baseline_df.loc[user,item] = mu + user_dev + item+dev
+score_df = score_df.fillna(0) # fill missing values with 0
+
+# get the similarity table
+score_spare = sparse.csr_matrix(score_df)
+similarities = cosine_similarity(score_spare)
 similarities_df = pd.DataFrame(similarities, columns=score_df.index, index = score_df.index)
+
 
 """
 Given a user and an item to rate, predict the ratings of the user on the item
 """
 def rating_predict(user, item):
-    # find all users who have rated the item, return a user list
+    # users who have rated the item, return a user list
     userls = rated_users(item)
-    # find the similarity betwen the user and each user in the user list
-    sim_urs = similarities_df.loc[user, userls]
-    # find the score of similar users on the given item
+    # similarity betwen the user and each user in the user list
+    sim_usr = similarities_df.loc[user, userls]
+    # rating of similar users 
     sim_scores = score_df.loc[userls, item]
-    # predict rating of the user based on the weighted rating of similar users
-    score_pred = np.sum(sim_urs*sim_scores)/np.sum(sim_scores)
+    # baseline of similar users
+    baseline_usr = baseline_df.loc[userls,item] 
+    # predict rating of the user on the item
+    if np.sum(sim_scores)!=0:
+        score_pred =  baseline_df.loc[user,item] + np.sum(sim_usr*(sim_scores-baseline_usr))/np.sum(sim_scores) 
+    else:                                         
+        score_pred =  0
     return score_pred
 
 """
@@ -43,12 +61,18 @@ def rated_users(item):
 score_pred_df = score_df.copy()
 for user in score_df.index:
     for item in score_df.columns:
-        if score_df.loc[user, item]==0.0:
+        if score_df.loc[user, item]==0.0:            
             score_pred_df.loc[user, item] = rating_predict(user, item)
-print score_pred_df.head
+print score_pred_df.head(10)
 
 
-#pred_df = pd.DataFrame({index:score_df.loc[index].nlargest(5).index.tolist() for index in score_df.index}).T
+df = pd.DataFrame(index=score_pred_df.index, columns=range(5))
+df.fillna(0)
 for index in score_pred_df.index:
     pred_item = score_pred_df.loc[index] 
-    print pred_item[pred_item!=0.0].nlargest(5) # find the largest 5 scores for each user
+    df.loc[index] = pred_item.nlargest(5).index.values # find the largest 5 scores for each user
+df.to_csv("User_Based_CF.csv")
+
+
+
+

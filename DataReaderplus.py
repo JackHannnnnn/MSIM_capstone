@@ -164,6 +164,17 @@ class DataReader(object):
             emailed_tech_ids = list(set(included_tech_ids))                 
         return emailed_tech_ids
     
+    def get_user_keywords (self, user_id):
+        
+        """return contacted technology_ids while input user_id"""
+        query11 ="SELECT keyword_id FROM user_keywords WHERE user_id = '%s'" %(user_id)
+        self.cur.execute (query11) 
+        rows = self.cur.fetchall() 
+        user_keywords= []        
+        for row in rows:
+            user_keywords.append(row[0])                             
+        return user_keywords
+    
     
 
     # def get_contentview(self, user_id):

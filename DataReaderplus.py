@@ -85,6 +85,19 @@ class DataReader(object):
         this_matchinglist[index_list] = 1 # set value equals 1 if this technology has some certain keyword
         # np.set_printoptions(threshold='nan') # print all values in array when it is too long
         return np.array(this_matchinglist)
+    
+    
+    def cal_user_keywords(self, keywords, user_id):
+        """given user_id, mapping user keywords with all keywords return, binary vector"""     
+        user_keywords = self.get_user_keywords(user_id)
+        index_dict = dict((value, idx) for idx, value in enumerate(keywords))
+        index_list = [index_dict[x] for x in user_keywords] # return the index of each keyword id for this technology in the full list of keywords
+        this_matchinglist = np.zeros(len(keywords))  # initialize the matching list of this technology 
+        this_matchinglist[index_list] = 1 # set value equals 1 if this technology has some certain keyword
+        # np.set_printoptions(threshold='nan') # print all values in array when it is too long
+        return np.array(this_matchinglist)
+    
+    
 
     def get_score_data(self):
         """return the score table with user_id, technology_id, total_score  """
@@ -161,8 +174,21 @@ class DataReader(object):
             split_tech_ids = row[0].split(',') 
             included_tech_ids = list(map(int,split_tech_ids))
             included_tech_ids.extend(included_tech_ids)   
-            emailed_tech_ids = list(set(included_tech_ids))                 
+        emailed_tech_ids = list(set(included_tech_ids))                 
         return emailed_tech_ids
+    
+    
+    def get_clicked_tech_ids (self, user_id):
+        
+        """return clicked technology_ids from email list while input user_id"""
+        query7 ="SELECT clicked_technology_id FROM email_clicks WHERE user_id = '%s'" %(user_id)
+        self.cur.execute (query7) 
+        rows = self.cur.fetchall() 
+        clicked_tech_ids = []        
+        for row in rows:
+            clicked_tech_ids.append(row[0])                
+        return clicked_tech_ids
+    
     
     def get_user_keywords (self, user_id):
         
@@ -193,35 +219,9 @@ class DataReader(object):
     #     return this_content
     
      
-    # def get_tech_clicked(self, user_id):
-    #     """given one user id, find all his/her email_clicks (id of technology). Return a list of technology ids """
-    #     query7 = "SELECT * FROM email_clicks" 
-    #     self.cur.execute(query7)
-    #     user_click = []
-    #     rows = self.cur.fetchall()
-    #     for row in rows: # each click record"
-    #         #print row
-    #         if row[3] == user_id:
-    #             clicked = row[4]
-    #             user_click.append (clicked)
-    #     #print user_click     
-    #     return user_click 
     
-    # def get_contacted(self,user_id):
-    #     """given one user id, find all his/her contacted technology ids. Return a list of technology ids """
     
-    #     query8 = "SELECT * FROM contacts"
-    #     self.cur.execute(query8)
-    #     user_contact = []
-    #     rows = self.cur.fetchall()
-    #     #print rows
-    #     for row in rows: # each contact record
-    #         if row[1] == user_id:
-    #             contacted = row[2]
-    #             #print contacted
-    #             user_contact.append(contacted)
-    #     return user_contact
-    
+    #
 # def find_techid_index(this_tech_id, technology_id):
 #     """ given a list of technology id, list of all ids for technologies. Find the technology id index (natural number)"""
 #     techid_index = []

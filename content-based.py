@@ -80,21 +80,21 @@ for user in all_users:
     
     
     
-# Given user id to make recommendation for the top 5 most similar technologies 
-def recommend_top_similarity(user_id,reco_count):
-    """ Given user_id make recommendation from the tech_ids which excludes previously interacted tech_ids"""
+# Given user id make recommendation
+def recomend_top_similarity(user_id, reco_count):
+    """Given user id to make recommendation for top 5 most similar technologies """
     tech_similarity = {}
-    user_preference =user_profiles[user_id]
-    #extract interacted tech_ids
-    known_tech_ids = dr.DataReader().extract_interacted_technology(user_id)
-    #exclude interacted tech_ids
-    unknown_tech_ids = np.delete(np.array(all_tech_ids),known_tech_ids)
-    #iterate through all non interacted tech_ids
-    for tech in unknown_tech_ids:
-        tech_similarity[tech] = cosine_similarity(user_preference.reshape(1,-1), tech_profiles[tech].reshape(1,-1))
-    sorted_similarity = sorted(tech_similarity, key = tech_similarity.get,reverse=True)
+    #####assign which version of user profile will be used in the function#####
+    #versions include: user_profiles_interacted, user_profiles_keyword, user_profiles_comb
+    user_preference =user_profiles_interacted[user_id]
+    contacted_tech_ids = dr.DataReader().get_contacted_tech_ids(user_id)
+    uncontacted_tech_ids = np.delete(np.array(all_tech_ids), contacted_tech_ids)
+    for tech in uncontacted_tech_ids:
+        tech_similarity[tech] = cosine_similarity(user_preference.reshape(1,-1), tech_profiles[tech].reshape(1,-1))        
+    sorted_similarity = sorted(tech_similarity, key = tech_similarity.get, reverse = True)
     #print sorted_similarity
     top_similarity = sorted_similarity[:reco_count]
+    recommends = {}
     emailed = []
     unemailed = []
     for tech in top_similarity:
@@ -102,8 +102,13 @@ def recommend_top_similarity(user_id,reco_count):
             emailed.append(tech)
         else: 
             unemailed.append(tech)
-    print 'emailed = {}， unemailed = {}\n'.format(emailed, unemailed)  
+    recommends['emailed'] = emailed
+    recommends['unemailed'] = unemailed
+    return recommends
+    #print 'emailed = {}， unemailed = {}\n'.format(emailed, unemailed)  
+    
+
 
 #test
-recommend_top_similarity('528f575a-c6a8-4fdb-9bd7-4662d4718e13',5)
+recomend_top_similarity('57d97d4a-23b8-4148-a0a5-004a0a2ae3a6',5)
 

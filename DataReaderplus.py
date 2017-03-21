@@ -177,6 +177,19 @@ class DataReader(object):
         emailed_tech_ids = list(set(included_tech_ids))                 
         return emailed_tech_ids
     
+    
+    def get_clicked_tech_ids (self, user_id):
+        
+        """return clicked technology_ids from email list while input user_id"""
+        query7 ="SELECT clicked_technology_id FROM email_clicks WHERE user_id = '%s'" %(user_id)
+        self.cur.execute (query7) 
+        rows = self.cur.fetchall() 
+        clicked_tech_ids = []        
+        for row in rows:
+            clicked_tech_ids.append(row[0])                
+        return clicked_tech_ids
+    
+    
     def get_user_keywords (self, user_id):
         
         """return contacted technology_ids while input user_id"""
@@ -206,35 +219,9 @@ class DataReader(object):
     #     return this_content
     
      
-    # def get_tech_clicked(self, user_id):
-    #     """given one user id, find all his/her email_clicks (id of technology). Return a list of technology ids """
-    #     query7 = "SELECT * FROM email_clicks" 
-    #     self.cur.execute(query7)
-    #     user_click = []
-    #     rows = self.cur.fetchall()
-    #     for row in rows: # each click record"
-    #         #print row
-    #         if row[3] == user_id:
-    #             clicked = row[4]
-    #             user_click.append (clicked)
-    #     #print user_click     
-    #     return user_click 
     
-    # def get_contacted(self,user_id):
-    #     """given one user id, find all his/her contacted technology ids. Return a list of technology ids """
     
-    #     query8 = "SELECT * FROM contacts"
-    #     self.cur.execute(query8)
-    #     user_contact = []
-    #     rows = self.cur.fetchall()
-    #     #print rows
-    #     for row in rows: # each contact record
-    #         if row[1] == user_id:
-    #             contacted = row[2]
-    #             #print contacted
-    #             user_contact.append(contacted)
-    #     return user_contact
-    
+    #
 # def find_techid_index(this_tech_id, technology_id):
 #     """ given a list of technology id, list of all ids for technologies. Find the technology id index (natural number)"""
 #     techid_index = []

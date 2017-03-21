@@ -46,6 +46,7 @@ class DataReader(object):
         return self.technology_id
     
     def get_all_keywords(self):
+        """return a list of all keywords"""
         query3 = "SELECT * FROM keywords"
         self.cur.execute(query3)
         self.keywords = [] # store all the keywords
@@ -54,7 +55,7 @@ class DataReader(object):
             self.keywords.append(row[0])
         return self.keywords
         
-    def technology_keywords(self, keywords, technology_id):
+    def technology_keywords(self):
             """ return the dictionary, which key is technology id and value is a list of keywords """
             query4 = "SELECT * FROM technology_keywords"
             self.cur.execute(query4)
@@ -70,8 +71,16 @@ class DataReader(object):
 
     def cal_technology_keywords(self, keywords, technology_id):
         """
-        given technology_keywords (dictionary of all technology ids and its corresponding keywords) and some specific technology_id (int), 
-        return a technology keywords 0-1 mapping list used for content-based algorithm
+        parameters: 
+        -----------
+        keywords: dictionary
+            given technology_keywords (dictionary of all technology ids and its corresponding keywords) 
+        technology_id: int
+            some specific technology_id (int)
+        return
+        -----------
+        this_matchinglist: np.array
+             a technology keywords 0-1 mapping list used for content-based algorithm
         """
         query5 = "SELECT keyword_id FROM technology_keywords WHERE technology_id =" + str(technology_id)
         self.cur.execute(query5)
@@ -86,9 +95,35 @@ class DataReader(object):
         # np.set_printoptions(threshold='nan') # print all values in array when it is too long
         return np.array(this_matchinglist)
     
-    
+    def get_user_keywords (self, user_id):
+        
+        """
+        return 
+        --------
+        user_keywords: list
+            all keywords for the input user_id
+        """
+        query11 ="SELECT keyword_id FROM user_keywords WHERE user_id = '%s'" %(user_id)
+        self.cur.execute (query11) 
+        rows = self.cur.fetchall() 
+        user_keywords= []        
+        for row in rows:
+            user_keywords.append(row[0])                             
+        return user_keywords
+
     def cal_user_keywords(self, keywords, user_id):
-        """given user_id, mapping user keywords with all keywords return, binary vector"""     
+        """
+        mapping user keywords with all keywords return, binary vector
+        parameters:
+        -----------
+        keywords: dictionary
+            given technology_keywords (dictionary of all technology ids and its corresponding keywords)
+        user_id: string
+        return
+        -----------
+        this_matchinglist: np.array
+            a user keywords 0-1 mapping list used for content-based algorithm
+        """     
         user_keywords = self.get_user_keywords(user_id)
         index_dict = dict((value, idx) for idx, value in enumerate(keywords))
         index_list = [index_dict[x] for x in user_keywords] # return the index of each keyword id for this technology in the full list of keywords
@@ -190,16 +225,7 @@ class DataReader(object):
         return clicked_tech_ids
     
     
-    def get_user_keywords (self, user_id):
-        
-        """return contacted technology_ids while input user_id"""
-        query11 ="SELECT keyword_id FROM user_keywords WHERE user_id = '%s'" %(user_id)
-        self.cur.execute (query11) 
-        rows = self.cur.fetchall() 
-        user_keywords= []        
-        for row in rows:
-            user_keywords.append(row[0])                             
-        return user_keywords
+
     
     
 

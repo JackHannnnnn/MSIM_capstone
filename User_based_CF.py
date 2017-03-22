@@ -9,8 +9,8 @@ from scipy import sparse
 import time
 
 t0 = time.time()
-#score = sc.calculate_score()
-#sc.create_table(score)
+score = sc.calculate_score()
+sc.create_table(score)
 dataReader = dr.DataReader()
 scoreData = dataReader.get_score_data()# read data from the Score table
 score_df = scoreData.pivot(index='user_id', columns = 'technology_id', values = 'total_score') # reshape score table 
@@ -57,7 +57,7 @@ for user in score_pred_df.index:
     mask = (pred_item.index).isin(contactedItem) # exclude the items user has contacted
     predResult_df.loc[user] = pred_item[~mask].nlargest(5).index.values # find the largest 5 scores for each user
 
-predResult_df["emailed"] = np.array([dataReader.get_emailed_tech_ids(user) for user in predResult_df.index]) # add a column to show emailed items
+predResult_df["emailed"] = np.array([np.intersect1d(dataReader.get_emailed_tech_ids(user), predResult_df.loc[user], assume_unique=True) for user in predResult_df.index]) # add a column to show emailed items
 predResult_df.to_csv("User_Based_CF.csv")
 t1 = time.time()
 print "time:", t1-t0

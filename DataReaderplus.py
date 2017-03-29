@@ -225,9 +225,15 @@ class DataReader(object):
         return clicked_tech_ids
     
     
+    def get_university_tech_ids(self, university_id):
 
-    
-    
+        query12 = "SELECT id FROM technologies WHERE university_profile_id = '%s'"%(university_id)    
+        self.cur.execute(query12)
+        rows = self.cur.fetchall()
+        tech_ids = []
+        for row in rows:
+            tech_ids.append(row[0])
+        return tech_ids       
 
     # def get_contentview(self, user_id):
     #     """given one user id, find all his/her content view (id of technology). Return a list of technology ids """

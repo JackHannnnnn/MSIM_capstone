@@ -135,25 +135,51 @@ class DataReader(object):
     
 
     def get_score_data(self):
-        """return the score table with user_id, technology_id, total_score  """
+        """
+        return 
+        -------
+        scoreData: table
+            the score table with user_id, technology_id, total_score  """
         self.scoreData = pd.read_sql("SELECT user_id, technology_id, total_score FROM score", con = self.con)        
         return self.scoreData
     
     def get_contacts_table(self):
+        """
+        return
+        --------
+        contacts: table 
+            table for contacts which contain columns user_id, technology_id, number of records
+        """
         self.contacts = pd.read_sql( "SELECT user_id, technology_id , count(*) as c_count FROM contacts group by user_id, technology_id", con = self.con)    
         return self.contacts
     
     def get_clicks_table(self):
+        """
+        return
+        --------
+        clicks: table   
+            table for clicks which contain columns user_id, technology_id, number of records
+        """
         self.clicks =  pd.read_sql( "SELECT user_id, clicked_technology_id as technology_id, count(*) as e_count FROM email_clicks group by user_id, technology_id", con = self.con)
         return self.clicks
 
     def get_activities_table(self):
+        """
+        return
+        --------
+        activities: table   
+            table for activities which contain columns user_id, details
+        """
         self.activities = pd.read_sql( "SELECT user_id, details FROM user_activities", con = self.con) 
         return self.activities
     
-        
     def extract_interacted_technology(self, user_id):
-        """ return the list of all technology ids which have interaction with the user"""         
+        """ 
+        return
+        -------
+        tech_id_list: list
+            the list of all technology ids which have interaction with the user
+        """         
         query6 = "SELECT technology_id FROM score WHERE user_id = '%s'" %(user_id)
         self.cur.execute(query6)              
         rows = self.cur.fetchall()    
@@ -163,7 +189,11 @@ class DataReader(object):
         return tech_id_list
     
     def extract_interacted_keywords(self, user_id):
-        """ return the list of all technology ids which have interaction with the user"""         
+        """ 
+        return 
+        ------
+        keywords_list: list
+            the list of all keywords which have interaction with the user"""         
         tech_id_list = self.extract_interacted_technology(user_id)
         query7 ="SELECT * FROM technology_keywords"  
         self.cur.execute (query7) 
@@ -176,7 +206,12 @@ class DataReader(object):
     
     
     def extract_keywords(self, technology_id):
-        """ return keywords of given technology id"""         
+        """ 
+        return 
+        ------
+        keywords_list: list
+            keywords of given technology id
+        """         
         query8 ="SELECT keyword_id FROM technology_keywords WHERE technology_id = '%s'" %(technology_id)
         self.cur.execute (query8) 
         rows = self.cur.fetchall() 
@@ -188,7 +223,12 @@ class DataReader(object):
     
     def get_contacted_tech_ids (self, user_id):
         
-        """return contacted technology_ids while input user_id"""
+        """
+        return 
+        -------
+        contacted_tech_ids: list
+            contacted technology_ids while input user_id
+        """
         query9 ="SELECT technology_id FROM contacts WHERE user_id = '%s'" %(user_id)
         self.cur.execute (query9) 
         rows = self.cur.fetchall() 
@@ -199,8 +239,12 @@ class DataReader(object):
     
     
     def get_emailed_tech_ids (self, user_id):
-        
-        """return contacted technology_ids while input user_id"""
+        """
+        return
+        --------
+        emailed_tech_ids: list
+            contacted technology_ids while input user_id
+        """
         query10 ="SELECT included_technology_ids FROM email_clicks WHERE user_id = '%s'" %(user_id)
         self.cur.execute (query10) 
         rows = self.cur.fetchall() 
@@ -215,7 +259,12 @@ class DataReader(object):
     
     def get_clicked_tech_ids (self, user_id):
         
-        """return clicked technology_ids from email list while input user_id"""
+        """
+        return 
+        ------
+        clicked_tech_ids: list
+            clicked technology_ids from email list while input user_id
+        """
         query7 ="SELECT clicked_technology_id FROM email_clicks WHERE user_id = '%s'" %(user_id)
         self.cur.execute (query7) 
         rows = self.cur.fetchall() 

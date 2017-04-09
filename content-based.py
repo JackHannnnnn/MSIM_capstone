@@ -39,34 +39,38 @@ def user_profile_interacted(user_id):
     #initial user_keywords_sums
     user_keywords_sum = np.zeros(len(all_keywords))
     user_tech_ids = dr.DataReader().extract_interacted_technology(user_id)
-    #iterate through all tech ids which this user has interaction with
-    for tech_id in user_tech_ids:
-        #user viewed tech mapping with all keywords and weight by score
-        weight = scoreData.loc[ (scoreData.user_id == user_id) & (scoreData.technology_id == tech_id), "total_score"].iloc[0]  
-        #print weight
-        # user_keywords = np.array(dr.DataReader().cal_technology_keywords(all_keywords, tech_id)) * weight
-        user_keywords = tech_profile[tech_id]*weight
-        #sum all vectors of this user
-        user_keywords_sum = user_keywords_sum + user_keywords       
-        #sum weigth for one user
-        weight_sum = weight_sum + weight
-    #print weight_sum
-    #print user_keywords_sum
-    # mean of vector as user profile
-    #user_profiles[user] = user_keywords_sum/weight_sum
-    this_interacted_prof = user_keywords_sum/weight_sum
+    if user_tech_ids: # it is possible that this user never interacts with any technology
+        #iterate through all tech ids which this user has interaction with
+        for tech_id in user_tech_ids:
+            #user viewed tech mapping with all keywords and weight by score
+            weight = scoreData.loc[ (scoreData.user_id == user_id) & (scoreData.technology_id == tech_id), "total_score"].iloc[0]  
+            # print weight, "aaa"
+            # user_keywords = np.array(dr.DataReader().cal_technology_keywords(all_keywords, tech_id)) * weight
+            user_keywords = tech_profile[tech_id]*weight
+            #sum all vectors of this user
+            user_keywords_sum = user_keywords_sum + user_keywords       
+            #sum weigth for one user
+            weight_sum = weight_sum + weight
+        # print weight_sum
+        #print weight_sum
+        #print user_keywords_sum
+        # mean of vector as user profile
+        #user_profiles[user] = user_keywords_sum/weight_sum
+        this_interacted_prof = user_keywords_sum/weight_sum
+    else:
+        this_interacted_prof = np.zeros(len(all_keywords))
     return this_interacted_prof
     
 
-# def user_selfidentified_prof(user_id): 
-# """given one user_id, function returns a keywords mapping list for this user"""  
-# # user profiles built on self-identified keywords by users
-# #empty dictionary to store user_profiles
-# # user_profiles_keyword = {}
-# #extract user_keywords mapped with all_keywords
-# # for user in all_users:     
-#     this_selfidentified_prof = dr.DataReader().cal_user_keywords(all_keywords, user_id)
-#     return this_selfidentified_prof
+def user_selfidentified_prof(user_id): 
+    """given one user_id, function returns a keywords mapping list for this user"""  
+# user profiles built on self-identified keywords by users
+#empty dictionary to store user_profiles
+# user_profiles_keyword = {}
+#extract user_keywords mapped with all_keywords
+# for user in all_users:     
+    this_selfidentified_prof = dr.DataReader().cal_user_keywords(all_keywords, user_id)
+    return this_selfidentified_prof
 
 def user_comb_prof(user_id, method = user_profile_interacted):
     """given one user_id, function returns the profile of this user, which takes consideration of both interacted history and user self-identified keywordsl mapping list"""
@@ -129,10 +133,27 @@ def recomend_top_similarity(method, user_id):
     
 
 if __name__ == '__main__':
-    all_user_similarity = []
+    # for user in all_users[0:2]:
+    #     print recomend_top_similarity(user_profile_interacted,user)
+    all_user_similarity1 = []
+    all_user_similarity2 = []
+    all_user_similarity3 = []
     for user in all_users:
         tech_similarity = recomend_top_similarity(user_comb_prof,user)
-        all_user_similarity.append(tech_similarity)
-    (pd.DataFrame(all_user_similarity, index = all_users)).to_csv("content_based_for_all_user_tech.csv")
+        tech_similarity2 = recomend_top_similarity(user_profile_interacted,user)
+        tech_similarity3 = recomend_top_similarity(user_selfidentified_prof,user)
+        all_user_similarity1.append(tech_similarity)
+        all_user_similarity2.append(tech_similarity2)
+        all_user_similarity3.append(tech_similarity3)
+    output1 = pd.DataFrame(all_user_similarity1, index = all_users)
+    output1.index.name = 'user_id'
+    output1.to_csv("cv_combination.csv")
+    output2 = pd.DataFrame(all_user_similarity2, index = all_users)
+    output2.index.name = 'user_id'
+    output2.to_csv("cv_interaction.csv")
+    output3 = pd.DataFrame(all_user_similarity3, index = all_users)
+    output3.index.name = 'user_id'
+    output3.to_csv("cv_self_identified.csv")
+
     end = time.time()
     print "time:", end-start

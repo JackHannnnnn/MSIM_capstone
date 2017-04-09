@@ -84,7 +84,7 @@ def user_comb_prof(user_id, method = user_profile_interacted):
     
     
 # Given user id make recommendation
-def recomend_top_similarity(method, user_id, reco_count):
+def recomend_top_similarity(method, user_id):
     """
     return the recommend technology for one user, based on user profile calculate method and the number of technologies to recommend
     parameters
@@ -108,23 +108,31 @@ def recomend_top_similarity(method, user_id, reco_count):
     uncontacted_tech_ids = np.delete(np.array(all_tech_ids), contacted_tech_ids)
     # only recommend technologies which are not contacted
     for tech in uncontacted_tech_ids:
-        tech_similarity[tech] = cosine_similarity(user_preference.reshape(1,-1), tech_profiles[tech].reshape(1,-1))        
-    sorted_similarity = sorted(tech_similarity, key = tech_similarity.get, reverse = True)
-    #print sorted_similarity
-    top_similarity = sorted_similarity[:reco_count]
-    recommends = {}
-    emailed = []
-    unemailed = []
-    for tech in top_similarity:
-        if tech in dr.DataReader().get_emailed_tech_ids(user_id):
-            emailed.append(tech)
-        else: 
-            unemailed.append(tech)
-    recommends['emailed'] = emailed
-    recommends['unemailed'] = unemailed
-    return recommends 
+        tech_similarity[tech] = cosine_similarity(user_preference.reshape(1,-1), tech_profiles[tech].reshape(1,-1))[0,0]        
+    for tech in contacted_tech_ids:
+        tech_similarity[tech] = 0.0
+    # sorted_similarity = sorted(tech_similarity, key = tech_similarity.get, reverse = True)
+    return tech_similarity
+    # #print sorted_similarity
+    # top_similarity = sorted_similarity[:reco_count]
+    # recommends = {}
+    # emailed = []
+    # unemailed = []
+    # for tech in top_similarity:
+    #     if tech in dr.DataReader().get_emailed_tech_ids(user_id):
+    #         emailed.append(tech)
+    #     else: 
+    #         unemailed.append(tech)
+    # recommends['emailed'] = emailed
+    # recommends['unemailed'] = unemailed
+    # return recommends 
     
 
-print recomend_top_similarity(user_comb_prof,'57d97d4a-23b8-4148-a0a5-004a0a2ae3a6',5)
-end = time.time()
-print "time:", end-start
+if __name__ == '__main__':
+    all_user_similarity = []
+    for user in all_users:
+        tech_similarity = recomend_top_similarity(user_comb_prof,user)
+        all_user_similarity.append(tech_similarity)
+    (pd.DataFrame(all_user_similarity, index = all_users)).to_csv("content_based_for_all_user_tech.csv")
+    end = time.time()
+    print "time:", end-start

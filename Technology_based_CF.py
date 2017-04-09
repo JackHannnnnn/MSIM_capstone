@@ -26,9 +26,9 @@ score_df = score_df.fillna(0) # fill NaN data with 0
 # Calculate Technology based similarity
 score_df_t=score_df.T
 score_spare_t = sparse.csr_matrix(score_df_t) 
+
 similarities_tech = cosine_similarity(score_spare_t)
 similarities_tech_df = pd.DataFrame(similarities_tech, columns=score_df_t.index, index = score_df_t.index)
-
 
 # Create a list of user_ids and tech_ids which are available in scoreData
 user_ids = scoreData['user_id'].unique()
@@ -84,7 +84,7 @@ for tl in tuple_list:
 # Unstack the prediction dict into prediction data frame
 idx=pd.MultiIndex.from_tuples(prediction.keys())
 prediction_df=pd.DataFrame(list(prediction.values()),index=idx,columns=['Technology_id']).unstack(fill_value=0)['Technology_id']
-
+print prediction_df
 # Generate predictions for company users
 # Email_clicked column indicates the technology ids the user has clicked before
 
@@ -99,7 +99,7 @@ def user_prediction(user_ID,pre_count):
 
 
 #==============================================================================
-# user_prediction('57e5254e-80c8-479b-979f-00530a2a1238',10)
+user_prediction('57e5254e-80c8-479b-979f-00530a2a1238',10)
 # 
 # pre_count=5
 # pre_df=pd.DataFrame({n: prediction_df.T[col].nlargest(pre_count).index.tolist() 

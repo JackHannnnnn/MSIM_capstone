@@ -109,3 +109,7 @@ user_prediction('57e5254e-80c8-479b-979f-00530a2a1238',10)
 # pre_df.to_csv('Item based Collaborative Filtering_final.csv', sep=',', index = True, header =True)
 #==============================================================================
 
+if __name__ == '__main__':
+    # Output a csv file
+    prediction_df.index.name = 'user_id'
+    prediction_df.to_csv("item_based_cf.csv")

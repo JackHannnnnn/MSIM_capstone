@@ -149,7 +149,7 @@ class BiasLatentFactorModel(object):
         tech_preds = [(i, pred) for i, pred in enumerate(preds)]
         tech_preds = sorted(tech_preds, key=lambda x: x[1], reverse=True)
         contact_ids = self.data_reader.get_contacted_tech_ids(uid)
-        top_k = [pids[tech_index] for tech_index, score in tech_preds if tech_index not in contact_ids][:k]
+        top_k = [pids[tech_index] for tech_index, score in tech_preds if pids[tech_index] not in contact_ids][:k]
         # print 'uid: ', uid, '\ttime elapsed: ', datetime.now() - start
         return top_k
         

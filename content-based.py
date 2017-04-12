@@ -8,6 +8,7 @@ import time
 start = time.time()
 #get score table
 scoreData = dr.DataReader().get_score_data()
+print scoreData[scoreData.technology_id == 84]
 #get interacted user in score table
 interacted_users = scoreData.user_id.unique()
 #get all users in data base
@@ -16,12 +17,14 @@ all_users = dr.DataReader().get_user_id()
 all_keywords= dr.DataReader().get_all_keywords()
 #get list of all tech ids
 all_tech_ids = dr.DataReader().get_technology_id()
+# print all_tech_ids
 #creat empty dictionary to store tech_profiles. Key is the technology id and value is technology and its keywords mapping list 
 tech_profiles = {}
 for tech in all_tech_ids:
     #tech profiling by mapping with all_keywords
     tech_profile = np.array(dr.DataReader().cal_technology_keywords(all_keywords, tech))
     tech_profiles[tech] = tech_profile 
+# print tech_profiles.keys(), "ssss"
     
     
 
@@ -39,6 +42,8 @@ def user_profile_interacted(user_id):
     #initial user_keywords_sums
     user_keywords_sum = np.zeros(len(all_keywords))
     user_tech_ids = dr.DataReader().extract_interacted_technology(user_id)
+    # print user_tech_ids
+    # print user_tech_ids, "sssssss"
     if user_tech_ids: # it is possible that this user never interacts with any technology
         #iterate through all tech ids which this user has interaction with
         for tech_id in user_tech_ids:
@@ -46,17 +51,19 @@ def user_profile_interacted(user_id):
             weight = scoreData.loc[ (scoreData.user_id == user_id) & (scoreData.technology_id == tech_id), "total_score"].iloc[0]  
             # print weight, "aaa"
             # user_keywords = np.array(dr.DataReader().cal_technology_keywords(all_keywords, tech_id)) * weight
-            user_keywords = tech_profile[tech_id]*weight
+            user_keywords = tech_profiles[tech_id]*weight
+            # print tech_profile[tech_id]
             #sum all vectors of this user
             user_keywords_sum = user_keywords_sum + user_keywords       
             #sum weigth for one user
             weight_sum = weight_sum + weight
-        # print weight_sum
+        # print weight_sum,"dddd"
         #print weight_sum
-        #print user_keywords_sum
+        # print max(user_keywords_sum), "l"
         # mean of vector as user profile
         #user_profiles[user] = user_keywords_sum/weight_sum
         this_interacted_prof = user_keywords_sum/weight_sum
+        # print max(this_interacted_prof), "tttt"
     else:
         this_interacted_prof = np.zeros(len(all_keywords))
     return this_interacted_prof
@@ -133,27 +140,27 @@ def recomend_top_similarity(method, user_id):
     
 
 if __name__ == '__main__':
-    # for user in all_users[0:2]:
-    #     print recomend_top_similarity(user_profile_interacted,user)
-    all_user_similarity1 = []
+    # for user in all_users[2]:
+    # recomend_top_similarity(user_profile_interacted,all_users[3])
+    # all_user_similarity1 = []
     all_user_similarity2 = []
-    all_user_similarity3 = []
+    # all_user_similarity3 = []
     for user in all_users:
-        tech_similarity = recomend_top_similarity(user_comb_prof,user)
+    #     tech_similarity = recomend_top_similarity(user_comb_prof,user)
         tech_similarity2 = recomend_top_similarity(user_profile_interacted,user)
-        tech_similarity3 = recomend_top_similarity(user_selfidentified_prof,user)
-        all_user_similarity1.append(tech_similarity)
+    #     tech_similarity3 = recomend_top_similarity(user_selfidentified_prof,user)
+    #     all_user_similarity1.append(tech_similarity)
         all_user_similarity2.append(tech_similarity2)
-        all_user_similarity3.append(tech_similarity3)
-    output1 = pd.DataFrame(all_user_similarity1, index = all_users)
-    output1.index.name = 'user_id'
-    output1.to_csv("cv_combination.csv")
+    #     all_user_similarity3.append(tech_similarity3)
+    # output1 = pd.DataFrame(all_user_similarity1, index = all_users)
+    # output1.index.name = 'user_id'
+    # output1.to_csv("cv_combination.csv")
     output2 = pd.DataFrame(all_user_similarity2, index = all_users)
     output2.index.name = 'user_id'
     output2.to_csv("cv_interaction.csv")
-    output3 = pd.DataFrame(all_user_similarity3, index = all_users)
-    output3.index.name = 'user_id'
-    output3.to_csv("cv_self_identified.csv")
+    # output3 = pd.DataFrame(all_user_similarity3, index = all_users)
+    # output3.index.name = 'user_id'
+    # output3.to_csv("cv_self_identified.csv")
 
     end = time.time()
     print "time:", end-start

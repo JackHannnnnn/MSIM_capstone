@@ -33,6 +33,31 @@ uids = [uid for uid in user_pool if uid not in item_based_cf.index]
 padded_df = pd.DataFrame(np.zeros((len(uids), item_based_cf.shape[1])), index=uids, columns=item_based_cf.columns)
 item_based_cf = pd.concat([item_based_cf, padded_df], axis=0)
 
+# Normalize result form Content-based algorithm
+for row in range(cb_combination.shape[0]):
+    row_data = cb_combination.iloc[row]
+    min_val = min(row_data)
+    max_val = max(row_data)
+    interval = max_val - min_val
+    cb_combination.iloc[row] = [(r - min_val) / interval for r in row_data]
+
+for row in range(cb_interaction.shape[0]):
+    row_data = cb_interaction.iloc[row]
+    min_val = min(row_data)
+    max_val = max(row_data)
+    # print min_val, max_val
+    interval = max_val - min_val
+    cb_interaction.iloc[row] = [(r - min_val) / interval for r in row_data]
+    
+for row in range(cb_self_identified.shape[0]):
+    row_data = cb_self_identified.iloc[row]
+    min_val = min(row_data)
+    max_val = max(row_data)
+    # print min_val, max_val
+    interval = max_val - min_val
+    cb_self_identified.iloc[row] = [(r - min_val) / interval for r in row_data]
+
+
 # Ensemble: optimized weighted average
 item_based_cf.sort_index(0, inplace=True)
 item_based_cf.sort_index(1, inplace=True)

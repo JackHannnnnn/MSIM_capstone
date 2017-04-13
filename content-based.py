@@ -7,8 +7,10 @@ import time
 
 start = time.time()
 #get score table
+# score = sc.calculate_score()
+# sc.create_table(score)
 scoreData = dr.DataReader().get_score_data()
-print scoreData[scoreData.technology_id == 84]
+# print scoreData[scoreData.technology_id == 84]
 #get interacted user in score table
 interacted_users = scoreData.user_id.unique()
 #get all users in data base
@@ -35,9 +37,6 @@ def user_profile_interacted(user_id):
     """
     given user_id, function returns the user profile weighted by interacted scores
     """
-    # user_profiles_interacted = {}
-    # for user in interacted_users:  
-    #     #initial weight_sum 
     weight_sum = 0
     #initial user_keywords_sums
     user_keywords_sum = np.zeros(len(all_keywords))
@@ -58,10 +57,8 @@ def user_profile_interacted(user_id):
             #sum weigth for one user
             weight_sum = weight_sum + weight
         # print weight_sum,"dddd"
-        #print weight_sum
         # print max(user_keywords_sum), "l"
         # mean of vector as user profile
-        #user_profiles[user] = user_keywords_sum/weight_sum
         this_interacted_prof = user_keywords_sum/weight_sum
         # print max(this_interacted_prof), "tttt"
     else:
@@ -140,27 +137,26 @@ def recomend_top_similarity(method, user_id):
     
 
 if __name__ == '__main__':
-    # for user in all_users[2]:
     # recomend_top_similarity(user_profile_interacted,all_users[3])
-    # all_user_similarity1 = []
+    all_user_similarity1 = []
     all_user_similarity2 = []
-    # all_user_similarity3 = []
+    all_user_similarity3 = []
     for user in all_users:
-    #     tech_similarity = recomend_top_similarity(user_comb_prof,user)
-        tech_similarity2 = recomend_top_similarity(user_profile_interacted,user)
-    #     tech_similarity3 = recomend_top_similarity(user_selfidentified_prof,user)
-    #     all_user_similarity1.append(tech_similarity)
-        all_user_similarity2.append(tech_similarity2)
-    #     all_user_similarity3.append(tech_similarity3)
+        # tech_similarity = recomend_top_similarity(user_comb_prof,user)
+        # tech_similarity2 = recomend_top_similarity(user_profile_interacted,user)
+        tech_similarity3 = recomend_top_similarity(user_selfidentified_prof,user)
+        # all_user_similarity1.append(tech_similarity)
+        # all_user_similarity2.append(tech_similarity2)
+        all_user_similarity3.append(tech_similarity3)
     # output1 = pd.DataFrame(all_user_similarity1, index = all_users)
     # output1.index.name = 'user_id'
     # output1.to_csv("cv_combination.csv")
-    output2 = pd.DataFrame(all_user_similarity2, index = all_users)
-    output2.index.name = 'user_id'
-    output2.to_csv("cv_interaction.csv")
-    # output3 = pd.DataFrame(all_user_similarity3, index = all_users)
-    # output3.index.name = 'user_id'
-    # output3.to_csv("cv_self_identified.csv")
+    # output2 = pd.DataFrame(all_user_similarity2, index = all_users)
+    # output2.index.name = 'user_id'
+    # output2.to_csv("cv_interaction.csv")
+    output3 = pd.DataFrame(all_user_similarity3, index = all_users)
+    output3.index.name = 'user_id'
+    output3.to_csv("cv_self_identified.csv")
 
     end = time.time()
     print "time:", end-start

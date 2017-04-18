@@ -1,0 +1,38 @@
+from pyramid.view import view_config
+from pyramid.request import Request
+from pyramid.response import Response
+import json
+import DataReaderplus as dr
+
+@view_config(route_name='home', renderer='templates/homepage.jinja2')
+def home_view(request):
+    return {'project': 'visualization'}
+    
+@view_config(route_name='university', renderer='templates/university.jinja2')
+def university_view(request):
+    return {'university': request.matchdict['id']}
+
+@view_config(route_name='university_data', renderer='json')
+def university_data_view(request):
+    dataReader = dr.DataReader()
+    universityID = request.matchdict['id']
+    # retrieve technology ids published by the university
+    tech_ids = dataReader.get_techID_by_university(universityID)
+    # retrieve count of views on each technology
+    tech_views = dataReader.get_user_views(tech_ids)
+    # retrieve top keywords of users viewing the technology
+    user_keywords = dataReader.get_user_keywords_of_viewed_tech(tech_ids)
+    # retrieve all keywords across all technologies
+    tech_keywords = dataReader.get_tech_keywords(tech_ids)
+    
+
+    response = Response(json.dumps({"tech_views": tech_views, "user_keywords": user_keywords, "tech_keywords": tech_keywords}))
+    response.headerlist.extend(
+		(
+			('Access-Control-Allow-Origin', '*'),
+			('Access-Control-Allow-Headers', 'Access-Control-Allow-Origin'),
+			('Access-Control-Allow-Method', 'GET'),
+			('Content-Type', 'application/json')
+		)
+	)
+    return response    

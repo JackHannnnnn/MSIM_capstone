@@ -1,0 +1,3 @@
+[run]
+source = visualization
+omit = visualization/test*

@@ -7,36 +7,52 @@
     <title>{project}</title>   
     <style>
     	html, body {
-		 	margin: 0;
+
 		  	height: 100%
 		}
-		.axis {
-   			font: 12px sans-serif;
- 		}
-
-		.axis path,
- 		.axis line {
-   			fill: none;
-   			stroke: #000;
-   			shape-rendering: crispEdges;
- 		}
-		.bar {
-			fill: #0080FF
+		
+		.title {
+			margin-top: 50px;
+			margin-left:20px;
 		}
+
+		.bar {
+			fill: steelblue
+		}
+
 		.bar:hover {
   			fill: #003366
 		}
+
 		.svgContainer {
-			padding-left: 100px
+			margin-left: 80px;
+			margin-right: 80px;
+			margin-top:50px;
 		}
-		.text {
-			fill: "black"
-			font-family: sans-serif
+
+		text {
+			fill: "black";
+			font: 12px sans-serif;
 		}
+
+		circle {
+			  fill: rgb(31, 119, 180);
+			  fill-opacity: .25;
+			  stroke: rgb(31, 119, 180);
+			  stroke-width: 1px;
+		}
+
+		.leaf circle {
+			  fill: #ff7f0e;
+			  fill-opacity: 1;
+		}
+
+
+
     </style> 
 </head>
 <body> <!-- content -->
-    <h1 id="title">In-Part University Reports</h1>        
+    <h1 class="title">In-Part University Reports</h1>        
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
     <script type="text/javascript" src="/static/viz.js"></script>

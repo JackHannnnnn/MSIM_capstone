@@ -312,7 +312,8 @@ class DataReader(object):
     		A list of dictionary with the key being the technology ID and the value being the dictionary whhicn contains the information about the keyword and the count of occurence
     	"""
     	ukey_tech = {}
-    	ukey_list = []
+        ukey_obj = {"name": "technologies", "children": []}
+    	# ukey_list = []
     	query13 = "SELECT S.technology_id, U.keyword_id, COUNT(*) AS CNT FROM score as S RIGHT JOIN user_keywords AS U ON S.user_id = U.user_id WHERE S.technology_id IN (" +", ".join(['%s']*len(technology_ids)) % tuple(technology_ids) + ") AND S.viewed_score IS NOT NULL GROUP BY S.technology_id, U.keyword_id ORDER BY S.technology_id, CNT DESC" 
     	self.cur.execute(query13)
     	rows = self.cur.fetchall()
@@ -323,14 +324,14 @@ class DataReader(object):
     			i = 0
     		if row[0] in ukey_tech:
     			if i<10:
-    				ukey_tech[row[0]].append({"keyword": row[1], "count": row[2]})
+    				ukey_tech[row[0]].append({"name": row[1], "size": row[2]})
     				i+=1
     			else:
     				pass
     	for key, value in ukey_tech.iteritems():
-    		ukey_list.append({"TechID": key, "Keywords": value})
+            ukey_obj["children"].append({"name": key, "children": value})
     	
-    	return ukey_list
+    	return ukey_obj
 
     def get_tech_keywords(self, technology_ids):
     	"""

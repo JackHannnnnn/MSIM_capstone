@@ -32,7 +32,7 @@ def calculate_score():
     #dfs outer joins
 
     score_orig = pd.merge(contacts, clicks, how = 'outer').merge(activities, how = 'outer')
-    score = score_orig[-score_orig['technology_id'].isin(orphan_tech_ids)]
+    score = score_orig[-score_orig['technology_id'].isin(orphan_tech_ids)].reset_index(drop=True)
 
     #df split train/test
     np.random.seed(seed = 13579)

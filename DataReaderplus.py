@@ -282,7 +282,31 @@ class DataReader(object):
         tech_ids = []
         for row in rows:
             tech_ids.append(row[0])
-        return tech_ids       
+        return tech_ids     
+    
+    def get_orphan_tech_ids(self):
+        """find orphan tech id in user_activtivies table
+        parameters:
+        ----------- 
+        technologies table
+        user_activities table
+        return:
+        ------
+        orphan tech_id: list
+         tech_ids which are in the user_activities table, but not in the technologies table
+        """   
+        
+        activities = self.get_activities_table()
+        viewed_tech_ids = []
+        for index, row in activities.iterrows():
+            start = row[1].find("Article_id") # finding start from "Article_id"
+            end = row[1].find("content")
+            tech_id = int(re.search(r'\d+', row[1][start:end]).group(0))
+            viewed_tech_ids.append(tech_id)     
+        tech_ids = self.get_technology_id()    
+        orphan_tech_ids = np.setdiff1d(np.array(viewed_tech_ids), np.array(tech_ids))
+        return orphan_tech_ids
+    
 
     # def get_contentview(self, user_id):
     #     """given one user id, find all his/her content view (id of technology). Return a list of technology ids """

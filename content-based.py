@@ -134,7 +134,7 @@ def recomend_top_similarity(method, user_id):
     # recommends['emailed'] = emailed
     # recommends['unemailed'] = unemailed
     # return recommends 
-    
+
 
 if __name__ == '__main__':
     # recomend_top_similarity(user_profile_interacted,all_users[3])

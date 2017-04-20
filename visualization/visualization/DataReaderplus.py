@@ -336,11 +336,11 @@ class DataReader(object):
     	"""
     	return
     	------
-    	keywords: list
+    	keywords: list of dictionary
     		a list of dictionary with the keys being the keyword and the value being the count of occurence
     	"""
     	keywords = []
-    	query14 ="SELECT K.keyword_id, COUNT(*) AS CNT FROM technologies AS T LEFT JOIN technology_keywords AS K ON T.id = K.technology_id WHERE T.id IN (" +", ".join(['%s']*len(technology_ids)) % tuple(technology_ids) + ") GROUP BY K.keyword_id ORDER BY CNT"
+    	query14 = "SELECT K.keyword_id, COUNT(*) AS CNT FROM technologies AS T LEFT JOIN technology_keywords AS K ON T.id = K.technology_id WHERE T.id IN (" +", ".join(['%s']*len(technology_ids)) % tuple(technology_ids) + ") GROUP BY K.keyword_id ORDER BY CNT DESC"
     	self.cur.execute(query14)
     	rows = self.cur.fetchall()
     	for row in rows:

@@ -4,9 +4,9 @@ var xmlhttp = new XMLHttpRequest();
 xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         var dat = JSON.parse(this.responseText);
-		techViews_SVG(dat.tech_views)
+		// techViews_SVG(dat.tech_views)
 		userKeywords_SVG(dat.user_keywords)
-		// techKeywords_SVG(dat.tech_keywords)
+		techKeywords_SVG(dat.tech_keywords)
 
     }
 };
@@ -135,5 +135,61 @@ function userKeywords_SVG(userKeywords) { // generate circle packing based on th
 
 
 function techKeywords_SVG(techKeywords){ // generate bubble chart based on the keywords crossing all technologies published by the university
-	console.log(techKeywords)
+	console.log(techKeywords.slice(-10))
+     var svgContainer = d3.select("body")
+                        .append("svg")
+                        .attr("height", "800")
+                        .attr("width", "800")
+                        .attr("class", "svgContainer");
+
+    var diameter = 600;
+    var max_count = d3.max(techKeywords, function(d){
+        return d.Count;
+    });
+    var color = d3.scaleLinear()
+                    .domain([1, max_count])
+                    .range(["beige","red"]);
+
+    var bubble = d3.pack(techKeywords)
+            .size([diameter, diameter])
+            .padding(1.5);
+    var nodes = d3.hierarchy({children:techKeywords.slice(-10)})
+            .sum(function(d) { return d.Count; });
+    var node = svgContainer.selectAll(".node")
+            .data(bubble(nodes).descendants())
+            .enter()
+            .filter(function(d){
+                return  !d.children
+            })
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+
+    node.append("title")
+            .text(function(d) {
+                return d.keyword + ": " + d.Count;
+            });
+    node.append("circle")
+            .attr("r", function(d) {
+                return d.r;
+            })
+            .style("fill", function(d) {
+                return color(d.value);
+            });
+
+    node.append("text")
+            .attr("dy", ".3em")
+            .style("text-anchor", "middle")
+            .text(function(d) {
+                return d.data.keyword + ": " + d.data.Count;
+            });
+
+    d3.select(self.frameElement)
+            .style("height", diameter + "px");
+
+
+
 }
+

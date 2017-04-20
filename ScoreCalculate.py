@@ -12,23 +12,27 @@ def calculate_score():
     contacts = dr.DataReader().get_contacts_table()
     clicks =  dr.DataReader().get_clicks_table()
     activities = dr.DataReader().get_activities_table()
+    orphan_tech_ids = dr.DataReader().get_orphan_tech_ids()
     # extract technology_id from details
-    technology_id = []
+    technology_id= []
     for index, row in activities.iterrows():
         start = row[1].find("Article_id") # finding start from "Article_id"
         end = row[1].find("content")
         tech_id = int(re.search(r'\d+', row[1][start:end]).group(0))
         technology_id.append(tech_id)
+    
         
     #mapping tech_id with user_id   
     activities['technology_id'] = technology_id 
     #drop column detials 
     activities = activities.drop('details', 1)
+    #
     activities = activities.groupby(["user_id", "technology_id"]).size().reset_index(name = "v_count")
 
     #dfs outer joins
 
-    score = pd.merge(contacts, clicks, how = 'outer').merge(activities, how = 'outer')
+    score_orig = pd.merge(contacts, clicks, how = 'outer').merge(activities, how = 'outer')
+    score = score_orig[-score_orig['technology_id'].isin(orphan_tech_ids)]
 
     #df split train/test
     np.random.seed(seed = 13579)
@@ -38,7 +42,7 @@ def calculate_score():
     np.random.shuffle(rand_order)
     score['whether_train'] = np.zeros(len(score))
     train_index = list(rand_order[:int(n*.66)])
-    score.loc[train_index, 'whether_train'] = 1
+    score.loc[train_index, 'whether_train'] == 1
 
     #############################weight##############
     weight = np.array([[5, 1, 2]]).T
@@ -57,7 +61,7 @@ def calculate_score():
 def create_table(score):
     """ create mysql table score and insert into database"""
     #drop score table if exists
-    con = mdb.connect(host = 'localhost', user = 'root', passwd = "123", db = "capstone")
+    con = mdb.connect(host = 'localhost', user = 'root', passwd = "1234", db = "capstone")
     cur = con.cursor()
     query = 'DROP TABLE IF EXISTS score'
     cur.execute(query)
@@ -91,3 +95,6 @@ def create_table(score):
     #from pandas.io import sql
     #sql.write_frame(score, con=con, name = 'score', if_exists = "replace")
 
+
+score = calculate_score()
+create_table(score)

@@ -318,16 +318,15 @@ class DataReader(object):
     	self.cur.execute(query13)
     	rows = self.cur.fetchall()
     	i = 0
-    	for row in rows:
-    		if row[0] not in ukey_tech:
-    			ukey_tech[row[0]] = []
-    			i = 0
-    		if row[0] in ukey_tech:
-    			if i<10:
-    				ukey_tech[row[0]].append({"name": row[1], "size": row[2]})
-    				i+=1
-    			else:
-    				pass
+        for row in rows:
+            if row[0] not in ukey_tech:
+                ukey_tech[row[0]] = [{"name": row[1], "size": row[2]}]
+                i = 1
+            elif i<10:
+                ukey_tech[row[0]].append({"name": row[1], "size": row[2]})
+                i += 1 
+            else:
+                pass
     	for key, value in ukey_tech.iteritems():
             ukey_obj["children"].append({"name": key, "children": value})
     	

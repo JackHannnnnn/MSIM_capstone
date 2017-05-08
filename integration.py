@@ -39,24 +39,6 @@ for tech in all_tech_ids:
     tech_profile = np.array(dr.DataReader().cal_technology_keywords(all_keywords, tech))
     tech_profiles[tech] = tech_profile 
     
-# Calculate keyword_based technology similarity
-tech_keyword_sim = {}
-num_tech_ids = len(all_tech_ids)
-for i in range(num_tech_ids):
-    for j in range(i + 1, num_tech_ids):
-        id1 = all_tech_ids[i]
-        id2 = all_tech_ids[j]
-        sim = cosine_similarity(tech_profiles[id1].reshape(1, -1), tech_profiles[id2].reshape(1, -1))[0, 0]
-        if id1 not in tech_keyword_sim.keys():
-            tech_keyword_sim[id1] = []
-        tech_keyword_sim[id1].append((id2, sim))
-        if id2 not in tech_keyword_sim.keys():
-            tech_keyword_sim[id2] = []
-        tech_keyword_sim[id2].append((id1, sim))  
-
-for i in range(num_tech_ids):
-    tech_keyword_sim[all_tech_ids[i]] = sorted(tech_keyword_sim[all_tech_ids[i]], key=lambda x : x[1], reverse=True)
-
 
 #############user profiling mapping with all_keywords############# 
 #dictionary to store user profile with user_id as key
@@ -156,37 +138,6 @@ score_spare_t = sparse.csr_matrix(score_df_t)
 
 similarities_tech = cosine_similarity(score_spare_t)
 similarities_tech_df = pd.DataFrame(similarities_tech, columns = score_df_t.index, index = score_df_t.index)
-
-tech_item_based_sim = {}
-for i in range(similarities_tech_df.shape[0]):
-    tech_id = similarities_tech_df.index[i]
-    sim_list = zip(similarities_tech_df.columns.tolist(), similarities_tech_df.iloc[i])
-    tech_item_based_sim[tech_id] = sorted(sim_list, key=lambda x: x[1], reverse=True)[1:]
-
-    
-def get_similari_tech_ids(tech_id, k, method='keyword'):
-    if method == 'keyword':
-        return [id for id, sim in tech_keyword_sim[long(tech_id)][:k]]
-    if method == 'item_based':
-        if int(tech_id) in tech_item_based_sim.keys():
-            return [id for id, sim in tech_item_based_sim[int(tech_id)][:k]]
-        else:
-            return [id for id, sim in tech_keyword_sim[long(tech_id)][:k]]
-     
-# Output technology similarity result
-keyword_sim_output = []
-item_based_sim_output = []
-for tech_id in all_tech_ids:
-    keyword_sim_output.append(get_similari_tech_ids(tech_id, 5, method='keyword'))
-    item_based_sim_output.append(get_similari_tech_ids(tech_id, 5, method='item_based'))
-
-keyword_sim_output = pd.DataFrame(keyword_sim_output, index=all_tech_ids)
-keyword_sim_output.index.name = 'tech_id'
-item_based_sim_output = pd.DataFrame(item_based_sim_output, index=all_tech_ids)
-item_based_sim_output.index.name = 'tech_id'
-keyword_sim_output.to_csv('keyword_sim_output.csv')
-item_based_sim_output.to_csv('item_based_sim_output.csv')
-
 
 # Create a list of user_ids and tech_ids which are available in scoreData
 user_ids = scoreData['user_id'].unique()

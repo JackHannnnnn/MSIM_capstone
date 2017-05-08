@@ -161,10 +161,24 @@ for i in range(similarities_tech_df.shape[0]):
     tech_id = similarities_tech_df.index[i]
     sim_list = zip(similarities_tech_df.columns.tolist(), similarities_tech_df.iloc[i])
     tech_item_based_sim[tech_id] = sorted(sim_list, key=lambda x: x[1], reverse=True)[1:]
-    
+ 
+def normalize_sim(sims):
+    max_val = max(sims)
+    min_val = min(sims)
+    interval = max_val - min_val
+    return [(sim - min_val) / interval if interval != 0 else sim for sim in sims]
+
 def ensemble_tech_sim(tech_id, k):
-    keyword = {tid: sim for tid, sim in tech_keyword_sim[long(tech_id)]}
-    item_based = {tid: sim for tid, sim in tech_item_based_sim[int(tech_id)]} if int(tech_id) in tech_item_based_sim else {}
+    norm_keyword = normalize_sim([sim for tid, sim in tech_keyword_sim[long(tech_id)]])
+    norm_keyword = zip([tid for tid, sim in tech_keyword_sim[long(tech_id)]], norm_keyword)
+    keyword = {tid: sim for tid, sim in norm_keyword}
+    
+    if int(tech_id) in tech_item_based_sim:
+        norm_item = normalize_sim([sim for tid, sim in tech_item_based_sim[int(tech_id)]])
+        norm_item = zip([tid for tid, sim in tech_item_based_sim[long(tech_id)]], norm_item)
+        item_based = {tid: sim for tid, sim in norm_item} 
+    else:
+        item_based = {}
     output = []
     for tid in keyword.keys():
         if tid not in item_based:
@@ -172,6 +186,7 @@ def ensemble_tech_sim(tech_id, k):
         else:
             output.append((tid, (keyword[tid] + item_based[tid]) / 2.0))
     return [tid for tid, sim in sorted(output, key=lambda x: x[1], reverse=True)][:k]
+
     
     
 ensemble_output = []

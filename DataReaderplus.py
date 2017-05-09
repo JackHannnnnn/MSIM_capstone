@@ -6,9 +6,9 @@ import pandas as pd
 
 class DataReader(object):
     def __init__(self):
+        """construction function. Initiate and connect to db"""
         self.con = mdb.connect(host = 'localhost', user = 'root', passwd = "123", db = "capstone") 
         self.cur = self.con.cursor() # the cursor object will let you execute all the queries you need
-        # self.user_num = 0
 
     def get_user_num(self):
         """return the number of unique users """
@@ -71,6 +71,8 @@ class DataReader(object):
 
     def cal_technology_keywords(self, keywords, technology_id):
         """
+        Map each technology keywords to the keywords library. Return binary list
+
         parameters: 
         -----------
         keywords: dictionary
@@ -79,7 +81,7 @@ class DataReader(object):
             some specific technology_id (int)
         return
         -----------
-        this_matchinglist: np.array
+        this_matching_list: np.array
              a technology keywords 0-1 mapping list used for content-based algorithm
         """
         query5 = "SELECT keyword_id FROM technology_keywords WHERE technology_id =" + str(technology_id)
@@ -89,15 +91,22 @@ class DataReader(object):
         for row in rows:
             this_keywords_list.append(row[0])
         index_dict = dict((value, idx) for idx, value in enumerate(keywords))
-        index_list = [index_dict[x] for x in this_keywords_list] # return the index of each keyword id for this technology in the full list of keywords
-        this_matchinglist = np.zeros(len(keywords))  # initialize the matching list of this technology 
-        this_matchinglist[index_list] = 1 # set value equals 1 if this technology has some certain keyword
+        # return the index of each keyword id for this technology in the full list of keywords
+        index_list = [index_dict[x] for x in this_keywords_list] 
+        this_matching_list = np.zeros(len(keywords))  # initialize the matching list of this technology 
+        this_matching_list[index_list] = 1 # set value equals 1 if this technology has some certain keyword
         # np.set_printoptions(threshold='nan') # print all values in array when it is too long
         return np.array(this_matchinglist)
     
     def get_user_keywords (self, user_id):
         
         """
+        given user id, return user keywords
+
+        parameters
+        -----------
+        user_id: str
+            id of user
         return 
         --------
         user_keywords: list
@@ -114,6 +123,7 @@ class DataReader(object):
     def cal_user_keywords(self, keywords, user_id):
         """
         mapping user keywords with all keywords return, binary vector
+        
         parameters:
         -----------
         keywords: dictionary

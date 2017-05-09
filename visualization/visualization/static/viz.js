@@ -135,7 +135,7 @@ function userKeywords_SVG(userKeywords) { // generate circle packing based on th
 
 
 function techKeywords_SVG(techKeywords){ // generate bubble chart based on the keywords crossing all technologies published by the university
-	console.log(techKeywords.slice(-10))
+	console.log(techKeywords.slice(0,10))
      var svgContainer = d3.select("body")
                         .append("svg")
                         .attr("height", "800")
@@ -153,8 +153,7 @@ function techKeywords_SVG(techKeywords){ // generate bubble chart based on the k
     var bubble = d3.pack(techKeywords)
             .size([diameter, diameter])
             .padding(1.5);
-
-    var nodes = d3.hierarchy({children:techKeywords.slice(-10)})
+    var nodes = d3.hierarchy({children:techKeywords.slice(0,10)})
             .sum(function(d) { return d.Count; });
             
     var node = svgContainer.selectAll(".node")

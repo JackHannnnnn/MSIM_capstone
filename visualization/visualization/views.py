@@ -24,9 +24,11 @@ def university_data_view(request):
     user_keywords = dataReader.get_user_keywords_of_viewed_tech(tech_ids)
     # retrieve all keywords across all technologies
     tech_keywords = dataReader.get_tech_keywords(tech_ids)
-    
-
-    response = Response(json.dumps({"tech_views": tech_views, "user_keywords": user_keywords, "tech_keywords": tech_keywords}))
+    # retrieve company ids which viewed the technology
+    viewed_users = dataReader.get_tech_viewed_user(tech_ids)
+    # retrieve email sent vs clicks per technology
+    emails = dataReader.email_sent_vs_click(tech_ids)
+    response = Response(json.dumps({"tech_views": tech_views, "user_keywords": user_keywords, "tech_keywords": tech_keywords, "viewed_users": viewed_users, "emails": emails}))
     response.headerlist.extend(
 		(
 			('Access-Control-Allow-Origin', '*'),

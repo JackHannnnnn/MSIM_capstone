@@ -4,9 +4,11 @@ var xmlhttp = new XMLHttpRequest();
 xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         var dat = JSON.parse(this.responseText);
-		// techViews_SVG(dat.tech_views)
+		techViews_SVG(dat.tech_views)
 		userKeywords_SVG(dat.user_keywords)
 		techKeywords_SVG(dat.tech_keywords)
+  //   //viewedusers(dat.viewed_users)
+    emailSentVsClick(dat.emails)
 
     }
 };
@@ -51,8 +53,6 @@ function techViews_SVG(techViews) { // generate bar chart based on the count of 
   				.rangeRound([height, 0])
   				.domain([0, d3.max(techViews, function(d) { return d.Views; })]);
 
-
-		
 
 	//append x axis
 	g.append("g").attr("class", ".axis")
@@ -153,8 +153,10 @@ function techKeywords_SVG(techKeywords){ // generate bubble chart based on the k
     var bubble = d3.pack(techKeywords)
             .size([diameter, diameter])
             .padding(1.5);
+
     var nodes = d3.hierarchy({children:techKeywords.slice(-10)})
             .sum(function(d) { return d.Count; });
+            
     var node = svgContainer.selectAll(".node")
             .data(bubble(nodes).descendants())
             .enter()
@@ -193,3 +195,161 @@ function techKeywords_SVG(techKeywords){ // generate bubble chart based on the k
 
 }
 
+function viewedusers(viewedUsers){
+    // console.log(viewedUsers)
+    var columns = ["Technology", "Company"]
+
+
+    var table = d3.select("body")
+                  .append("table")
+                  .attr("style", "margin-left: 250px")
+
+    var thead = table.append("thead")
+    var tbody = table.append("tbody") 
+
+    // // append the header row
+    thead.append("tr")
+          .selectAll("th")
+          .data(columns)
+          .enter()
+          .append("th")
+          .text(function(column){ return column;})
+                    
+    // var rows = tbody.selectAll("tr")
+    //                 .data(viewedUsers)
+    //                 .enter()
+    //                 .append("tr");
+
+    // var cells = rows.selectAll("td")
+    //               .data(function(row){
+    //                 return columns.map(function(column){
+    //                   return {column: column, value: row[column]};
+    //                 });
+    //               })
+    //               .enter()
+    //               .append("td")
+    //               .text(function(d){return d.value})
+
+    var nested = d3.nest()
+                  .key(function(d){ return d.Technology;})
+                  .entries(viewedUsers)
+    console.log(nested)
+
+    nested.forEach(function (d) {
+    var rowspan = d.values.length;
+    d.values.forEach(function (val, index) {
+        var tr = thead.append("tr");
+        if (index == 0) { //rowspan only for first element
+            tr.append("td")
+                .attr("rowspan", rowspan)
+                .text(val.Technology);
+        }
+        tr.append("td")
+            .text(val.Company);
+
+
+    });
+});
+          
+
+}
+
+function emailSentVsClick(emailData){
+
+  console.log(emailData)
+
+
+
+  var svgContainer = d3.select("body")
+            .append("svg")
+            .attr("height", "500")
+            .attr("width", "960")
+            .attr("class", "svgContainer")
+
+
+  var margin = {top: 20, right: 20, bottom: 30, left: 40},
+      width = svgContainer.attr("width") - margin.left - margin.right,
+      height = svgContainer.attr("height") - margin.top - margin.bottom;
+
+  var g = svgContainer.append("g")
+                      .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); //add a g element that provides a reference point for adding axes
+
+
+  var x0 = d3.scaleBand()
+    .rangeRound([0, width])
+    .paddingInner(0.4)
+    .domain(emailData.map(function(d) {return d.Technology}));
+
+  var keys = d3.keys(emailData[0]).filter(function(key) { return key !== "Technology"; });
+
+ emailData.forEach(function(d) {
+    d.values = keys.map(function(name) { return {label: name, value: +d[name]}; });
+    console.log(d.values)
+});
+  
+  var x1 = d3.scaleBand()
+    .padding(0.05)
+    .rangeRound([0, x0.bandwidth()])
+    .domain(keys);  
+  
+  
+  var y = d3.scaleLinear().rangeRound([height, 0])
+            .domain([0, d3.max(emailData, function(d) { return d3.max(d.values, function(d) { return d.value; }); })])
+
+  var z = d3.scaleOrdinal().range(["#a05d56" , "#8a89a6"])
+
+
+g.append("g")
+      .attr("class", ".axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x0));
+
+
+g.append("g").attr("class", ".axis")
+             .call(d3.axisLeft(y).ticks(10))
+             .append("text")
+             .attr("transform", "rotate(-90)")
+             .attr("y", 6)
+             .attr("dy", ".71em")
+             .attr("text-anchor", "end")
+             .attr("fill", "#000")
+             .text("Counts")
+
+var bar = g.append("g")
+    .selectAll(".bar")
+    .data(emailData)
+    .enter().append("g")
+    .attr("class", ".bar")
+    .attr("transform", function(d) { return "translate(" + x0(d.Technology) + ",0)"; });
+
+bar.selectAll("rect")
+  .data(function(d){return d.values;})
+  .enter()
+  .append("rect")
+  .attr("width", x1.bandwidth())
+  .attr("x", function(d){return x1(d.label);})
+  .attr("y", function(d){return y(d.value);})
+  .attr("fill", function(d){return z(d.label);})
+  .attr("height", function(d){return height-y(d.value);})
+
+var legend = g.append("g")
+      .attr("font-family", "sans-serif")
+      .attr("font-size", 10)
+      .attr("text-anchor", "end")
+    .selectAll("g")
+    .data(keys)
+    .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width - 19)
+      .attr("width", 19)
+      .attr("height", 19)
+      .attr("fill", z);
+
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9.5)
+      .attr("dy", "0.32em")
+      .text(function(d) { return d; });
+}

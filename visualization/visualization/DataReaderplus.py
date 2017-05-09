@@ -308,8 +308,8 @@ class DataReader(object):
     	"""
     	return 
     	------
-    	ukey_list: list
-    		A list of dictionary with the key being the technology ID and the value being the dictionary whhicn contains the information about the keyword and the count of occurence
+    	ukey_obj: dictionary
+    		a dictionary showing the hierarchy of user keywords under each technology
     	"""
     	ukey_tech = {}
         ukey_obj = {"name": "technologies", "children": []}
@@ -348,7 +348,46 @@ class DataReader(object):
     	return keywords
 
 
+    def get_tech_viewed_user(self, technology_ids):
+        """
+        return
+        ------
+        viewed_users: list of dictionary
+            a list of dictionary showing the technology id and associated user id
+        """
+        viewed_users = {}
+        viewed_users_list = []
+        query15 = "SELECT S.technology_id, U.user_id FROM score as S RIGHT JOIN user_keywords AS U on S.user_id = U.user_id WHERE S.technology_id IN (" + ", ".join(['%s']*len(technology_ids)) % tuple(technology_ids) + ") AND S.viewed_score IS NOT NULL GROUP BY S.technology_id, U.user_id"
+        self.cur.execute(query15)
+        rows = self.cur.fetchall()
+        # for row in rows:
+        #     if row[0] in viewed_users:
+        #         viewed_users[row[0]].append(row[1])
+        #     else:
+        #         viewed_users[row[0]] = [row[1]]
+        for row in rows:
+            viewed_users_list.append({"Technology": row[0], "Company": row[1]})
+        # for key, value in viewed_users.iteritems():
+        #     viewed_users_list.append({"Technology": key, "Company": value})
+        return viewed_users_list
 
+
+    def email_sent_vs_click(self, technology_ids):
+        """
+        return 
+        ------
+        emails: list of dictionary
+            a list of dictionary showing number of email sent and number of email clicks associated with each technology
+        -----
+        """
+        emails = []
+        query16 = "SELECT SENT.*, CLICK.CLICK FROM (SELECT T.technology_id, count(E.user_id) AS SENT FROM emails AS E LEFT JOIN email_technologies AS t ON E.id = T.email_id GROUP BY T.technology_id) AS SENT LEFT JOIN (SELECT clicked_technology_id, count(event) as CLICK FROM email_clicks GROUP BY clicked_technology_id) AS CLICK ON SENT.technology_id = CLICK.clicked_technology_id WHERE SENT.technology_id in (" + ",".join(['%s']*len(technology_ids)) % tuple(technology_ids) + ")"
+        self.cur.execute(query16)
+        rows = self.cur.fetchall()
+        for row in rows:
+            emails.append({"Technology": row[0], "Emails Sent": row[1], "Emails Clicked": row[2]})
+        return emails
+    
     # def get_contentview(self, user_id):
     #     """given one user id, find all his/her content view (id of technology). Return a list of technology ids """
     #     query6 = "SELECT details FROM user_activities WHERE user_id =" + "'" +  user_id + "'" 

@@ -3,6 +3,7 @@ from pyramid.request import Request
 from pyramid.response import Response
 import json
 import DataReaderplus as dr
+import matchUsers
 
 @view_config(route_name='home', renderer='templates/homepage.jinja2')
 def home_view(request):
@@ -28,7 +29,9 @@ def university_data_view(request):
     viewed_users = dataReader.get_tech_viewed_user(tech_ids)
     # retrieve email sent vs clicks per technology
     emails = dataReader.email_sent_vs_click(tech_ids)
-    response = Response(json.dumps({"tech_views": tech_views, "user_keywords": user_keywords, "tech_keywords": tech_keywords, "viewed_users": viewed_users, "emails": emails}))
+    matched_users = matchUsers.find_match(tech_ids)
+
+    response = Response(json.dumps({"tech_views": tech_views, "user_keywords": user_keywords, "tech_keywords": tech_keywords, "viewed_users": viewed_users, "emails": emails, "matches": matched_users}))
     response.headerlist.extend(
 		(
 			('Access-Control-Allow-Origin', '*'),

@@ -7,8 +7,9 @@ xmlhttp.onreadystatechange = function() {
 		techViews_SVG(dat.tech_views)
 		userKeywords_SVG(dat.user_keywords)
 		techKeywords_SVG(dat.tech_keywords)
-  //   //viewedusers(dat.viewed_users)
+    viewedusers(dat.viewed_users)
     emailSentVsClick(dat.emails)
+    matchUsers(dat.matches)
 
     }
 };
@@ -58,21 +59,17 @@ function techViews_SVG(techViews) { // generate bar chart based on the count of 
 	g.append("g").attr("class", ".axis")
 		            .attr("transform", "translate(0," + height + ")")
 		            .call(d3.axisBottom(xScale))
-              	// .selectAll("text")
-              	// 	.style("text-anchor", "end")
-              	// 	.attr("dx", "1em")
 
-
-	
-    //append y axis
-    g.append("g").attr("class", ".axis")
-      			     .call(d3.axisLeft(yScale).ticks(10))
-    			       // .append("text")
-            		//  .attr("transform", "rotate(-90)")
-              //   .attr("y", 6)
-              //   .attr("dy", "0.71em")
-              //   .attr("text-anchor", "end")
-              //   .text("Views");
+  //append y axis
+  g.append("g").attr("class", ".axis")
+    			     .call(d3.axisLeft(yScale).ticks(10))
+               .append("text")
+               .attr("transform", "rotate(-90)")
+               .attr("y", 6)
+               .attr("dy", ".71em")
+               .attr("text-anchor", "end")
+               .attr("fill", "#000")
+               .text("Counts")
 
     var bars = g.selectAll("bar")
       						.data(techViews)
@@ -195,7 +192,7 @@ function techKeywords_SVG(techKeywords){ // generate bubble chart based on the k
 }
 
 function viewedusers(viewedUsers){
-    // console.log(viewedUsers)
+    console.log(viewedUsers)
     var columns = ["Technology", "Company"]
 
 
@@ -213,21 +210,7 @@ function viewedusers(viewedUsers){
           .enter()
           .append("th")
           .text(function(column){ return column;})
-                    
-    // var rows = tbody.selectAll("tr")
-    //                 .data(viewedUsers)
-    //                 .enter()
-    //                 .append("tr");
-
-    // var cells = rows.selectAll("td")
-    //               .data(function(row){
-    //                 return columns.map(function(column){
-    //                   return {column: column, value: row[column]};
-    //                 });
-    //               })
-    //               .enter()
-    //               .append("td")
-    //               .text(function(d){return d.value})
+                  
 
     var nested = d3.nest()
                   .key(function(d){ return d.Technology;})
@@ -276,7 +259,7 @@ function emailSentVsClick(emailData){
 
   var x0 = d3.scaleBand()
     .rangeRound([0, width])
-    .paddingInner(0.4)
+    .paddingInner(0.3)
     .domain(emailData.map(function(d) {return d.Technology}));
 
   var keys = d3.keys(emailData[0]).filter(function(key) { return key !== "Technology"; });
@@ -287,7 +270,7 @@ function emailSentVsClick(emailData){
 });
   
   var x1 = d3.scaleBand()
-    .padding(0.05)
+    .padding(0.15)
     .rangeRound([0, x0.bandwidth()])
     .domain(keys);  
   
@@ -351,4 +334,29 @@ var legend = g.append("g")
       .attr("y", 9.5)
       .attr("dy", "0.32em")
       .text(function(d) { return d; });
+}
+
+function matchUsers(matchUsers){
+  console.log(matchUsers)
+  var table =  d3.select("body").append("table")
+                .attr("style", "margin-left: 250px"),
+  thead = table.append("thead"),
+  tbody = table.append("tbody")
+
+ thead.selectAll("th")
+      .data(matchUsers.map(function(d){return d.Technology})) // technology list
+      .enter()
+      .append("th")
+      .text(function(d){return d})
+
+  var td = tbody.selectAll("td")
+              .data(matchUsers)
+              .enter()
+              .append("td")
+
+  td.selectAll("tr")
+      .data(function(d){return d.Matches})
+      .enter()
+      .append("tr")
+      .text(function(d){return d})
 }

@@ -386,6 +386,7 @@ class DataReader(object):
         rows = self.cur.fetchall()
         for row in rows:
             emails.append({"Technology": row[0], "Emails Sent": row[1], "Emails Clicked": row[2]})
+   
         return emails
     
     # def get_contentview(self, user_id):

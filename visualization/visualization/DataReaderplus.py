@@ -297,7 +297,10 @@ class DataReader(object):
 			A list of dictionary with the key being the technology ID and the value being the count of views on the technology
     	"""
     	tech_views = []
-    	query12 = "SELECT technology_id, sum(viewed_score) as views FROM score WHERE technology_id IN (" +", ".join(['%s']*len(technology_ids)) % tuple(technology_ids) + ") GROUP BY technology_id"
+    	query12 = "SELECT technology_id, sum(viewed_score) as views FROM score " \
+                  "WHERE technology_id " \
+                  "IN (" +", ".join(['%s']*len(technology_ids)) % tuple(technology_ids) + ") " \
+                  "GROUP BY technology_id"
     	self.cur.execute(query12)
     	rows = self.cur.fetchall()
     	for row in rows:
@@ -314,7 +317,15 @@ class DataReader(object):
     	ukey_tech = {}
         ukey_obj = {"name": "technologies", "children": []}
     	# ukey_list = []
-    	query13 = "SELECT S.technology_id, U.keyword_id, COUNT(*) AS CNT FROM score as S RIGHT JOIN user_keywords AS U ON S.user_id = U.user_id WHERE S.technology_id IN (" +", ".join(['%s']*len(technology_ids)) % tuple(technology_ids) + ") AND S.viewed_score IS NOT NULL GROUP BY S.technology_id, U.keyword_id ORDER BY S.technology_id, CNT DESC" 
+    	query13 = "SELECT S.technology_id, U.keyword_id, COUNT(*) AS CNT FROM " \
+                  "score as S RIGHT JOIN user_keywords AS U " \
+                  "ON S.user_id = U.user_id " \
+                  "WHERE S.technology_id " \
+                  "IN (" +", ".join(['%s']*len(technology_ids)) \
+                          % tuple(technology_ids) + ") " \
+                  "AND S.viewed_score IS NOT NULL " \
+                  "GROUP BY S.technology_id, U.keyword_id " \
+                  "ORDER BY S.technology_id, CNT DESC"
     	self.cur.execute(query13)
     	rows = self.cur.fetchall()
     	i = 0
@@ -381,7 +392,18 @@ class DataReader(object):
         -----
         """
         emails = []
-        query16 = "SELECT SENT.*, CLICK.CLICK FROM (SELECT T.technology_id, count(E.user_id) AS SENT FROM emails AS E LEFT JOIN email_technologies AS t ON E.id = T.email_id GROUP BY T.technology_id) AS SENT LEFT JOIN (SELECT clicked_technology_id, count(event) as CLICK FROM email_clicks GROUP BY clicked_technology_id) AS CLICK ON SENT.technology_id = CLICK.clicked_technology_id WHERE SENT.technology_id in (" + ",".join(['%s']*len(technology_ids)) % tuple(technology_ids) + ")"
+        query16 = "SELECT SENT.*, CLICK.CLICK " \
+                  "FROM " \
+                  "(SELECT T.technology_id, count(E.user_id) AS SENT " \
+                  "FROM emails AS E " \
+                  "LEFT JOIN email_technologies AS t " \
+                  "ON E.id = T.email_id " \
+                  "GROUP BY T.technology_id) AS SENT " \
+                  "LEFT JOIN " \
+                  "(SELECT clicked_technology_id, count(event) as CLICK " \
+                  "FROM email_clicks GROUP BY clicked_technology_id) AS CLICK " \
+                  "ON SENT.technology_id = CLICK.clicked_technology_id " \
+                  "WHERE SENT.technology_id in (" + ",".join(['%s']*len(technology_ids)) % tuple(technology_ids) + ")"
         self.cur.execute(query16)
         rows = self.cur.fetchall()
         for row in rows:

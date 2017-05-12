@@ -132,7 +132,7 @@ function userKeywords_SVG(userKeywords) { // generate circle packing based on th
 
 
 function techKeywords_SVG(techKeywords){ // generate bubble chart based on the keywords crossing all technologies published by the university
-	console.log(techKeywords.slice(0,10))
+//	console.log(techKeywords.slice(0,10))
      var svgContainer = d3.select("body")
                         .append("svg")
                         .attr("height", "800")
@@ -144,15 +144,16 @@ function techKeywords_SVG(techKeywords){ // generate bubble chart based on the k
         return d.Count;
     });
     var color = d3.scaleLinear()
-                    .domain([1, max_count])
-                    .range(["beige","red"]);
+                  .domain([1, max_count])
+                  .range(["beige","red"]);
 
     var bubble = d3.pack(techKeywords)
-            .size([diameter, diameter])
-            .padding(1.5);
+                    .size([diameter, diameter])
+                    .padding(1.5);
+
     var nodes = d3.hierarchy({children:techKeywords.slice(0,10)})
-            .sum(function(d) { return d.Count; });
-            
+                  .sum(function(d) { return d.Count; });
+
     var node = svgContainer.selectAll(".node")
             .data(bubble(nodes).descendants())
             .enter()
@@ -165,17 +166,40 @@ function techKeywords_SVG(techKeywords){ // generate bubble chart based on the k
                 return "translate(" + d.x + "," + d.y + ")";
             });
 
-    node.append("title")
-            .text(function(d) {
-                return d.keyword + ": " + d.Count;
-            });
+    var tooltip = d3.select("body")
+    .append("div")
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .style("visibility", "hidden")
+    .style("color", "white")
+    .style("padding", "8px")
+    .style("background-color", "rgba(0, 0, 0, 0.75)")
+    .style("border-radius", "6px")
+    .style("font", "12px sans-serif")
+    .text("tooltip");
+
+//    node.append("title")
+//            .text(function(d) {
+//                return d.data.keyword + ": " + d.data.Count;
+//            });
+
     node.append("circle")
             .attr("r", function(d) {
                 return d.r;
             })
             .style("fill", function(d) {
                 return color(d.value);
+            })
+            .on("mouseover", function(d) {
+              tooltip.text(d.data.keyword + ": " + d.value);
+              tooltip.style("visibility", "visible");
+            })
+            .on("mousemove", function() {
+              return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");
+            })
+            .on("mouseout", function(){return tooltip.style("visibility", "hidden");
             });
+
 
     node.append("text")
             .attr("dy", ".3em")

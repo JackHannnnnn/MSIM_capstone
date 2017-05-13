@@ -4,13 +4,12 @@ var xmlhttp = new XMLHttpRequest();
 xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         var dat = JSON.parse(this.responseText);
-		techViews_SVG(dat.tech_views)
+		techViews_SVG(dat.tech_views) // bar chart
+    emailSentVsClick(dat.emails) // group bar chart
 		userKeywords_SVG(dat.user_keywords)
 		techKeywords_SVG(dat.tech_keywords)
-    viewedusers(dat.viewed_users)
-    emailSentVsClick(dat.emails)
     matchUsers(dat.matches)
-
+    viewedusers(dat.viewed_users)
     }
 };
 
@@ -27,8 +26,8 @@ function techViews_SVG(techViews) { // generate bar chart based on the count of 
 
   var svgContainer = d3.select("body")
             .append("svg")
-            .attr("height", "500")
-            .attr("width", "960")
+            .attr("height", "400")
+            .attr("width", "600")
             .attr("class", "svgContainer")
 
 
@@ -72,7 +71,7 @@ function techViews_SVG(techViews) { // generate bar chart based on the count of 
                .text("Counts")
 
     var bars = g.selectAll("bar")
-      						.data(techViews)
+      					.data(techViews)
     						.enter()
     						.append("rect")
     
@@ -90,12 +89,12 @@ function userKeywords_SVG(userKeywords) { // generate circle packing based on th
 
   var svgContainer = d3.select("body")
                         .append("svg")
-                        .attr("height", "800")
-                        .attr("width", "800")
+                        .attr("height", "600")
+                        .attr("width", "600")
                         .attr("class", "svgContainer")
 
 
-  var diameter = svgContainer.attr("height");
+  var diameter = +svgContainer.attr("height");
 
   var g = svgContainer.append("g")
                     .attr("transform", "translate(2,2)")
@@ -109,13 +108,15 @@ function userKeywords_SVG(userKeywords) { // generate circle packing based on th
 
 
   var root = d3.hierarchy(userKeywords).sum(function(d) { return d.size; })
+  
   var node = g.selectAll(".node")
                 .data(pack(root).descendants())
                 .enter()
                 .append("g")
-                .attr("class", "node")
+                .attr("class", "node") 
                 .attr("class", function(d) { return d.children ? "node" : "leaf node"; })
                 .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
 
   node.append("title")
       .text(function(d) { return d.data.name + "\n" + format(d.value); });
@@ -135,8 +136,8 @@ function techKeywords_SVG(techKeywords){ // generate bubble chart based on the k
 	console.log(techKeywords.slice(0,10))
      var svgContainer = d3.select("body")
                         .append("svg")
-                        .attr("height", "800")
-                        .attr("width", "800")
+                        .attr("height", "600")
+                        .attr("width", "600")
                         .attr("class", "svgContainer");
 
     var diameter = 600;
@@ -191,14 +192,13 @@ function techKeywords_SVG(techKeywords){ // generate bubble chart based on the k
 
 }
 
-function viewedusers(viewedUsers){
+function viewedusers(viewedUsers){ // generate an html table showing the users that viewed each technology
     console.log(viewedUsers)
     var columns = ["Technology", "Company"]
 
 
     var table = d3.select("body")
                   .append("table")
-                  .attr("style", "margin-left: 250px")
 
     var thead = table.append("thead")
     var tbody = table.append("tbody") 
@@ -236,16 +236,15 @@ function viewedusers(viewedUsers){
 
 }
 
-function emailSentVsClick(emailData){
-
+function emailSentVsClick(emailData){ // generate a group bar chart showing counts of email sent vs email clicks on each technology
+ 
   console.log(emailData)
-
 
 
   var svgContainer = d3.select("body")
             .append("svg")
-            .attr("height", "500")
-            .attr("width", "960")
+            .attr("height", "400")
+            .attr("width", "600")
             .attr("class", "svgContainer")
 
 
@@ -308,6 +307,7 @@ bar.selectAll("rect")
   .data(function(d){return d.values;})
   .enter()
   .append("rect")
+  .attr("class", "gbar")
   .attr("width", x1.bandwidth())
   .attr("x", function(d){return x1(d.label);})
   .attr("y", function(d){return y(d.value);})
@@ -336,12 +336,11 @@ var legend = g.append("g")
       .text(function(d) { return d; });
 }
 
-function matchUsers(matchUsers){
+function matchUsers(matchUsers){ // add an html table showing the top 5 most relevant users to each technology
   console.log(matchUsers)
-  var table =  d3.select("body").append("table")
-                .attr("style", "margin-left: 250px"),
-  thead = table.append("thead"),
-  tbody = table.append("tbody")
+  var table =  d3.select("body").append("table"),
+      thead = table.append("thead"),
+      tbody = table.append("tbody")
 
  thead.selectAll("th")
       .data(matchUsers.map(function(d){return d.Technology})) // technology list
@@ -358,5 +357,6 @@ function matchUsers(matchUsers){
       .data(function(d){return d.Matches})
       .enter()
       .append("tr")
+      .style("line-height", "30px")
       .text(function(d){return d})
 }

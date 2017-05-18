@@ -10,7 +10,7 @@ from datetime import datetime
 class EnsembleRecommenderForTechnology(object):
     '''An ensemble recommender to recommend technologies for a tehchnology.
     
-    Frist, calculate technology similarities between technology keyword vector.
+    First, calculate technology similarities between technology keyword vector.
     Second, calculate technology similarities between columns of utility matrix. Each technology vector is represented by scores given by users.
     Finally, do a weighted average of two technology matrix. The weights are [0.5, 0.5].
     '''
@@ -31,7 +31,7 @@ class EnsembleRecommenderForTechnology(object):
         if self.tech_keyword_sim_matrix is not None:
             return self.tech_keyword_sim_matrix
         
-        print "Statr building tech keyword sim matrix..."
+        print "Start building tech keyword sim matrix..."
         self.tech_keyword_matrix = sparse.csr_matrix(self.tech_keyword_matrix)
         self.tech_keyword_sim_matrix = pd.DataFrame(cosine_similarity(self.tech_keyword_matrix),
                                                     index=self.dr.get_tech_ids(),
@@ -43,7 +43,7 @@ class EnsembleRecommenderForTechnology(object):
         if self.item_based_sim_matrix is not None:
             return self.item_based_sim_matrix
         
-        print "Statr building item_based Collaborative Filtering sim matrix..."
+        print "Start building item_based Collaborative Filtering sim matrix..."
         scoreData = self.score
         score_df = scoreData.pivot(index = 'user_id', columns = 'technology_id', values = 'total_score') # Reshape score table 
         score_df = score_df.fillna(0) # fill NaN data with 0
@@ -64,7 +64,7 @@ class EnsembleRecommenderForTechnology(object):
         if self.ensemble_sim_matrix is not None:
             return self.ensemble_sim_matrix
         
-        print "Statr building Ensemble sim matrix..."
+        print "Start building Ensemble sim matrix..."
         ensemble_sim_matrix = (self.tech_keyword_sim_matrix + self.item_based_sim_matrix) / 2
         ensemble_sim_matrix = ensemble_sim_matrix.loc[self.dr.get_tech_ids(), self.dr.get_tech_ids()]        
 

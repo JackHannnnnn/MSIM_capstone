@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import DataReaderplus as dr
 import MySQLdb as mdb
 import numpy as np
 import pandas as pd

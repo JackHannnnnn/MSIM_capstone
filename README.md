@@ -10,7 +10,6 @@ The recommendation algorithm is written in **Python 2.7**. Please execute them i
 The recommendation algorithm requires the installation of libraries below:
 **MySQLdb, numpy, pandas, itertools, sklearn, scipy, re, csv**
 
-<br/><br/>
 1. Run ``preprocess.py`` to calculate score data and write back the score table to the database.
   * Please replace the parameters **host**, **user**, **passwd** and **db** in line 22 and 85 with your own information.
   * After executing this file, please wait until the console prints Done. The message printed looks like this:
@@ -18,10 +17,10 @@ The recommendation algorithm requires the installation of libraries below:
 Start...
 Done.
 ```
-<br/><br/>
+
 2. Run ``DataReader.py`` to interact with MySQL database.
   * Please replace the parameters **host**, **user**, **passwd** and **db** with your own information.
-<br/><br/>
+
 3. Run ``EnsembleRecommender.py`` to generate personalized recommendations for each user.
   * Please note that this file takes about **20 mins** to run and is expected to take more time when the number of users and technologies increase in the database. After running the file, you should be able to see the message below:
   ```
@@ -56,7 +55,7 @@ Time elapsed: 0:19:19.833000
 ```sql
 select * from recommendationresultforusers;
 ```
-<br/><br/>
+
 4. Run ``EnsembleRecommenderForTechnology.py`` to generate similar technologies for a given technology.
 After running the file, you should be able to see the message below:
 ```

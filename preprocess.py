@@ -12,7 +12,7 @@ def calculate_score(weights):
     Params
     ------
     weights: list
-        The weights of contact data, clicked data, view data.
+        The weights of contact data, email clicked data, content viewed data.
         
     Returns
     DataFrame
@@ -45,7 +45,7 @@ def calculate_score(weights):
     # Add one more column tech id viewed by a user (Mapping)
     activities['technology_id'] = technology_id 
     
-    # Drop column detials 
+    # Drop column details 
     activities = activities.drop('details', 1)
     activities = activities.groupby(["user_id", "technology_id"]).size().reset_index(name = "v_count")
 

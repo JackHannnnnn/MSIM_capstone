@@ -221,7 +221,7 @@ class DataReader(object):
         return user_keyword_vector    
     
     def get_score_data(self):
-        """Returns the score table.
+        """Return the score table.
         
         Returns
         -------

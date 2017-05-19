@@ -50,7 +50,7 @@ Num of calcuation finished: 1200000     Time elapsed: 0:19:17.530000
 Done
 Time elapsed: 0:19:19.833000
 ```
-  * After the code finishes running, it writes back a **recommendationresultforusers table** back to MySQL database. By default, we are generating 10 recommendations for each user. If you want to configure the number of recommendations, please change the number 10 in line 251 to the number of recommendations you want to generate and rerun the file.
+  * After the code finishes running, it writes back a ``recommendationresultforusers`` table back to MySQL database. By default, we are generating 10 recommendations for each user. If you want to configure the number of recommendations, please change the number 10 in line 251 to the number of recommendations you want to generate and rerun the file.
 
   * You can check the recommendation table by executing
 ```sql
@@ -73,7 +73,7 @@ Done.
 Start writing recommendations to the database...
 Done
 ```
-  * After the code running completes, it writes back a **recommendationresultfortechs table** back to MySQL database. By default, we are generating 10 recommendations for each technology. If you want to configure the number of recommendations, please change the number 10 in line 146 to the number of recommendations you want to generate and rerun the code.
+  * After the code running completes, it writes back a ``recommendationresultfortechs`` table back to MySQL database. By default, we are generating 10 recommendations for each technology. If you want to configure the number of recommendations, please change the number 10 in line 146 to the number of recommendations you want to generate and rerun the code.
 
   * You can check the recommendation table by executing
 ```sql

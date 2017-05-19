@@ -8,7 +8,7 @@ The processes below assume that your database is on your localhost. The database
 The recommendation algorithm is written in **Python 2.7**. Please execute them in **Python2 environment**.
 
 The recommendation algorithm requires the installation of libraries below:
-**MySQLdb, numpy, pandas, itertools, sklearn.metrics.pairwise, scipy, re, csv**
+**MySQLdb, numpy, pandas, itertools, sklearn, scipy, re, csv**
 
 1. Run ``preprocess.py`` to calculate score data and write back the score table to the database.
   * Please replace the parameters **host**, **user**, **passwd** and **db** in line 22 and 85 with your own information.
@@ -17,8 +17,8 @@ The recommendation algorithm requires the installation of libraries below:
 Start...
 Done.
 ```
-
-2. Run ``Datareader.py`` to interact with MySQL database.
+\s\s
+2. Run ``DataReader.py`` to interact with MySQL database.
   * Please replace the parameters **host**, **user**, **passwd** and **db** with your own information.
 
 
@@ -58,7 +58,7 @@ select * from recommendationresultforusers;
 ```
 
 
-4. Run ``EnsembleRecommenderforTechnology.py`` to generate similar technologies for a given technology.
+4. Run ``EnsembleRecommenderForTechnology.py`` to generate similar technologies for a given technology.
 After running the file, you should be able to see the message below:
 ```
 Start building tech keyword sim matrix...

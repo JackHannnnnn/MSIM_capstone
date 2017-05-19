@@ -17,7 +17,7 @@ The recommendation algorithm requires the installation of libraries below:
 Start...
 Done.
 ```
-\s\s
+<br/>
 2. Run ``DataReader.py`` to interact with MySQL database.
   * Please replace the parameters **host**, **user**, **passwd** and **db** with your own information.
 

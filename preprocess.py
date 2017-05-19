@@ -38,7 +38,7 @@ def calculate_score(weights):
     cur.execute(query)
     rows = cur.fetchall()
     tech_ids = [row[0] for row in rows]
-    orphan_tech_ids = list(set(tech_ids) - set(viewed_tech_ids))
+    orphan_tech_ids = list(set(viewed_tech_ids) - set(tech_ids))
     
     technology_id = viewed_tech_ids
     

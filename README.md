@@ -5,7 +5,8 @@ This repository holds the code for MSIM capstone project.
 
 The processes below assume that your database is on your localhost. The database schema is the same as in the **capstone-MM-DD-YYYY.sql** file you provided with us.
 
-The recommendation algorithm is written in **Python 2.7**. Please execute them in Python2 environment.
+The recommendation algorithm is written in **Python 2.7**. Please execute them in **Python2 environment**.
+
 The recommendation algorithm requires the installation of libraries below:
 **MySQLdb, numpy, pandas, itertools, sklearn.metrics.pairwise, scipy, re, csv**
 
@@ -16,8 +17,10 @@ The recommendation algorithm requires the installation of libraries below:
 Start...
 Done.
 ```
+
 2. Run ``Datareader.py`` to interact with MySQL database.
   * Please replace the parameters **host**, **user**, **passwd** and **db** with your own information.
+
 
 3. Run ``EnsembleRecommender.py`` to generate personalized recommendations for each user.
   * Please note that this file takes about **20 mins** to run and is expected to take more time when the number of users and technologies increase in the database. After running the file, you should be able to see the message below:
@@ -54,6 +57,7 @@ Time elapsed: 0:19:19.833000
 select * from recommendationresultforusers;
 ```
 
+
 4. Run ``EnsembleRecommenderforTechnology.py`` to generate similar technologies for a given technology.
 After running the file, you should be able to see the message below:
 ```
@@ -69,7 +73,7 @@ Done.
 Start writing recommendations to the database...
 Done
 ```
-  * After the code running completes, it writes back a recommendationresultfortechs table back to MySQL database. By default, we are generating 10 recommendations for each technology. If you want to configure the number of recommendations, please change the number 10 in line 146 to the number of recommendations you want to generate and rerun the code.
+  * After the code running completes, it writes back a **recommendationresultfortechs table** back to MySQL database. By default, we are generating 10 recommendations for each technology. If you want to configure the number of recommendations, please change the number 10 in line 146 to the number of recommendations you want to generate and rerun the code.
 
   * You can check the recommendation table by executing
 ```sql

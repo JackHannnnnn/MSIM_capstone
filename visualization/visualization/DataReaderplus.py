@@ -297,15 +297,28 @@ class DataReader(object):
 			A list of dictionary with the key being the technology ID and the value being the count of views on the technology
     	"""
     	tech_views = []
-    	query12 = "SELECT technology_id, sum(viewed_score) as views FROM score " \
-                  "WHERE technology_id " \
-                  "IN (" +", ".join(['%s']*len(technology_ids)) % tuple(technology_ids) + ") " \
-                  "GROUP BY technology_id"
+    	query12 = "SELECT technology_id, sum(viewed_score) as views FROM score WHERE technology_id IN (" +", ".join(['%s']*len(technology_ids)) % tuple(technology_ids) + ") GROUP BY technology_id"
     	self.cur.execute(query12)
     	rows = self.cur.fetchall()
     	for row in rows:
     		tech_views.append({"TechID": row[0], "Views": row[1]})
     	return tech_views
+
+    def get_user_views_all(self):
+        """
+        return 
+        ------
+        tech_views: list of dictionary
+            A list of dictionary with the key being the technology ID and the value being the count of views on the technology
+        """
+        tech_views_all = []
+        query15 = "SELECT technology_id, sum(viewed_score) as views FROM " \
+                  "score GROUP BY technology_id"
+        self.cur.execute(query15)
+        rows = self.cur.fetchall()
+        for row in rows:
+            tech_views_all.append({"TechID": row[0], "Views": row[1]})
+        return tech_views_all
 
     def get_user_keywords_of_viewed_tech (self, technology_ids):
     	"""
@@ -410,7 +423,8 @@ class DataReader(object):
             emails.append({"Technology": row[0], "Emails Sent": row[1], "Emails Clicked": row[2]})
    
         return emails
-    
+
+
     # def get_contentview(self, user_id):
     #     """given one user id, find all his/her content view (id of technology). Return a list of technology ids """
     #     query6 = "SELECT details FROM user_activities WHERE user_id =" + "'" +  user_id + "'" 

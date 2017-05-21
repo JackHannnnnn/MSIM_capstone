@@ -1,5 +1,5 @@
 'use strict';
-
+console.log('vis.js running')
 var xmlhttp = new XMLHttpRequest();
 xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -14,6 +14,7 @@ xmlhttp.onreadystatechange = function() {
 };
 
 var universityId = window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 1);
+console.log(window.location.origin)
 xmlhttp.open("GET", window.location.origin + "/university/data/" + universityId, true);
 xmlhttp.setRequestHeader("Access-Control-Allow-Origin","*");
 xmlhttp.send();

@@ -313,7 +313,7 @@ class DataReader(object):
         """
         tech_views_all = []
         query15 = "SELECT technology_id, sum(viewed_score) as views FROM " \
-                  "score GROUP BY technology_id"
+                  "score GROUP BY technology_id order by views DESC"
         self.cur.execute(query15)
         rows = self.cur.fetchall()
         for row in rows:
@@ -421,8 +421,24 @@ class DataReader(object):
         rows = self.cur.fetchall()
         for row in rows:
             emails.append({"Technology": row[0], "Emails Sent": row[1], "Emails Clicked": row[2]})
-   
         return emails
+
+    def email_sent_all_tech(self):
+        """
+        emails sent per technology acorss all universities
+        return
+        ----------
+        email_sent_ls: list of dictionary 
+        """
+        email_sent_ls = []
+        query18 = "select T.technology_id, count(E.user_id) AS SENT FROM emails AS E Left join email_technologies as T on E.id = T.email_id group by T.technology_id having T.technology_id IS NOT NULL order by count(E.user_id) DESC"
+
+        self.cur.execute(query18)
+        rows = self.cur.fetchall()
+        for row in rows:
+            email_sent_ls.append({"Technology": row[0],
+                                  "Sent": row[1]})
+        return email_sent_ls[0:10]
 
 
     # def get_contentview(self, user_id):

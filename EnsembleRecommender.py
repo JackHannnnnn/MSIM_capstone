@@ -85,7 +85,8 @@ class EnsembleRecommender(object):
         scoreData = self.score
         score_df = scoreData.pivot(index = 'user_id', columns = 'technology_id', values = 'total_score') # Reshape score table 
         score_df = score_df.fillna(0) # fill NaN data with 0
-
+        score_dict = {(i,j):score_df.ix[i,j] for i in score_df.index for j in score_df.columns}
+        
         # Calculate Technology based similarity
         score_df_t = score_df.T
         score_spare_t = sparse.csr_matrix(score_df_t) 
@@ -116,7 +117,7 @@ class EnsembleRecommender(object):
         
         print 'Total num of calculation:', len(user_ids) * len(tech_ids)
         for i in itertools.product(user_ids,tech_ids):
-            prediction[i] = score_df.ix[i[0],i[1]]
+            prediction[i] = score_dict[i]
             base_line[i] = avg_user[i[0]] + avg_tech[i[1]] + all_mean
             if prediction[i] == 0:
                 numerator = sum((score_df.ix[i[0]] - base_line[i])*similarities_tech_df.ix[i[1]])

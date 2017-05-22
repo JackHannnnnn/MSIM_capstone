@@ -92,61 +92,7 @@ class DataReader(object):
         this_matchinglist[index_list] = 1 # set value equals 1 if this technology has some certain keyword
         # np.set_printoptions(threshold='nan') # print all values in array when it is too long
         return np.array(this_matchinglist)
-    
- 
-    
-    def get_contacted_tech_ids (self, user_id):
-        
-        """
-        return 
-        -------
-        contacted_tech_ids: list
-            contacted technology_ids while input user_id
-        """
-        query9 ="SELECT technology_id FROM contacts WHERE user_id = '%s'" %(user_id)
-        self.cur.execute (query9) 
-        rows = self.cur.fetchall() 
-        contacted_tech_ids = []        
-        for row in rows:
-            contacted_tech_ids.append(row[0])             
-        return contacted_tech_ids
-    
-    
-    def get_emailed_tech_ids (self, user_id):
-        """
-        return
-        --------
-        emailed_tech_ids: list
-            contacted technology_ids while input user_id
-        """
-        query10 ="SELECT included_technology_ids FROM email_clicks WHERE user_id = '%s'" %(user_id)
-        self.cur.execute (query10) 
-        rows = self.cur.fetchall() 
-        included_tech_ids = []        
-        for row in rows:
-            split_tech_ids = row[0].split(',') 
-            included_tech_ids = list(map(int,split_tech_ids))
-            included_tech_ids.extend(included_tech_ids)   
-        emailed_tech_ids = list(set(included_tech_ids))                 
-        return emailed_tech_ids
-    
-    
-    def get_clicked_tech_ids (self, user_id):
-        
-        """
-        return 
-        ------
-        clicked_tech_ids: list
-            clicked technology_ids from email list while input user_id
-        """
-        query7 ="SELECT clicked_technology_id FROM email_clicks WHERE user_id = '%s'" %(user_id)
-        self.cur.execute (query7) 
-        rows = self.cur.fetchall() 
-        clicked_tech_ids = []        
-        for row in rows:
-            clicked_tech_ids.append(row[0])                
-        return clicked_tech_ids
-    
+   
 
     def get_techID_by_university(self, university_id):
     	"""
@@ -174,15 +120,38 @@ class DataReader(object):
 			A list of dictionary with the key being the technology ID and the value being the count of views on the technology
     	"""
     	tech_views = []
+# <<<<<<< HEAD
     	query12 = "SELECT technology_id, sum(viewed_score) as views FROM score " \
                   "WHERE technology_id " \
                   "IN (" +", ".join(['%s']*len(technology_ids)) % tuple(technology_ids) + ") " \
                   "GROUP BY technology_id ORDER BY views DESC LIMIT 50" 
+# =======
+#     	query12 = "SELECT technology_id, sum(viewed_score) as views FROM score WHERE technology_id IN (" +", ".join(['%s']*len(technology_ids)) % tuple(technology_ids) + ") GROUP BY technology_id"
+# >>>>>>> ba4140058a9b1f441e85e766335e32e2def359a9
     	self.cur.execute(query12)
     	rows = self.cur.fetchall()
     	for row in rows:
     		tech_views.append({"TechID": row[0], "Count": row[1]})
     	return tech_views
+
+# <<<<<<< HEAD
+#     def get_user_keywords_of_viewed_tech (self, technology_ids, university_id):
+# =======
+#     def get_user_views_all(self):
+#         """
+#         return 
+#         ------
+#         tech_views: list of dictionary
+#             A list of dictionary with the key being the technology ID and the value being the count of views on the technology
+#         """
+#         tech_views_all = []
+#         query15 = "SELECT technology_id, sum(viewed_score) as views FROM " \
+#                   "score GROUP BY technology_id order by views DESC"
+#         self.cur.execute(query15)
+#         rows = self.cur.fetchall()
+#         for row in rows:
+#             tech_views_all.append({"TechID": row[0], "Views": row[1]})
+#         return tech_views_all
 
     def get_user_keywords_of_viewed_tech (self, technology_ids, university_id):
     	"""
@@ -191,37 +160,34 @@ class DataReader(object):
     	ukey_obj: dictionary
     		a dictionary showing the hierarchy of user keywords under each technology
     	"""
-    	if university_id=="all":
-    		pass
-    	else:
-	    	ukey_tech = {}
-	        ukey_obj = {"name": university_id, "children": []}
-	    	# ukey_list = []
-	    	query13 = "SELECT S.technology_id, U.keyword_id, COUNT(*) AS CNT FROM " \
-	                  "score as S RIGHT JOIN user_keywords AS U " \
-	                  "ON S.user_id = U.user_id " \
-	                  "WHERE S.technology_id " \
-	                  "IN (" +", ".join(['%s']*len(technology_ids)) \
-	                          % tuple(technology_ids) + ") " \
-	                  "AND S.viewed_score IS NOT NULL " \
-	                  "GROUP BY S.technology_id, U.keyword_id " \
-	                  "ORDER BY S.technology_id, CNT DESC"
-	    	self.cur.execute(query13)
-	    	rows = self.cur.fetchall()
-	    	i = 0
-	        for row in rows:
-	            if row[0] not in ukey_tech:
-	                ukey_tech[row[0]] = [{"name": row[1], "size": row[2]}]
-	                i = 1
-	            elif i<10:
-	                ukey_tech[row[0]].append({"name": row[1], "size": row[2]})
-	                i += 1 
-	            else:
-	                pass
-	    	for key, value in ukey_tech.iteritems():
-	            ukey_obj["children"].append({"name": key, "children": value})
-	    	
-	    	return ukey_obj
+    	ukey_tech = {}
+        ukey_obj = {"name": university_id, "children": []}
+    	# ukey_list = []
+    	query13 = "SELECT S.technology_id, U.keyword_id, COUNT(*) AS CNT FROM " \
+                  "score as S RIGHT JOIN user_keywords AS U " \
+                  "ON S.user_id = U.user_id " \
+                  "WHERE S.technology_id " \
+                  "IN (" +", ".join(['%s']*len(technology_ids)) \
+                          % tuple(technology_ids) + ") " \
+                  "AND S.viewed_score IS NOT NULL " \
+                  "GROUP BY S.technology_id, U.keyword_id " \
+                  "ORDER BY S.technology_id, CNT DESC"
+    	self.cur.execute(query13)
+    	rows = self.cur.fetchall()
+    	i = 0
+        for row in rows:
+            if row[0] not in ukey_tech:
+                ukey_tech[row[0]] = [{"name": row[1], "size": row[2]}]
+                i = 1
+            elif i<10:
+                ukey_tech[row[0]].append({"name": row[1], "size": row[2]})
+                i += 1 
+            else:
+                pass
+    	for key, value in ukey_tech.iteritems():
+            ukey_obj["children"].append({"name": key, "children": value})
+    	
+    	return ukey_obj
 
     def get_tech_keywords(self, technology_ids):
     	"""
@@ -295,9 +261,8 @@ class DataReader(object):
         rows = self.cur.fetchall()
         for row in rows:
             emails.append({"Technology": row[0], "Emails Sent": row[1], "Emails Clicked": row[2]})
-   
         return emails
-    
+
 
     def  email_sent_per_tech(self):
     	"""

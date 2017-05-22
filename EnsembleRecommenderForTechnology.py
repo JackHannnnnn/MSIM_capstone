@@ -23,6 +23,9 @@ class EnsembleRecommenderForTechnology(object):
         self.tech_keyword_sim_matrix = None
         self.item_based_sim_matrix = None
         self.ensemble_sim_matrix = None
+        
+        # Auxiliary variable
+        self.tech_id_set_for_item_based = None
     
     def build_tech_keyword_sim_matrix(self):
         if self.tech_keyword_sim_matrix is not None:
@@ -52,6 +55,8 @@ class EnsembleRecommenderForTechnology(object):
         similarities_tech = cosine_similarity(score_spare_t)
         similarities_tech_df = pd.DataFrame(similarities_tech, columns=score_df_t.index, index=score_df_t.index)
         self.item_based_sim_matrix = similarities_tech_df
+        self.tech_id_set_for_item_based = set(self.item_based_sim_matrix.index)
+
         print "Done."
         print '\n'    
 
@@ -61,16 +66,15 @@ class EnsembleRecommenderForTechnology(object):
         
         print "Start building Ensemble sim matrix..."
         ensemble_sim_matrix = (self.tech_keyword_sim_matrix + self.item_based_sim_matrix) / 2
+        ensemble_sim_matrix = ensemble_sim_matrix.loc[self.dr.get_tech_ids(), self.dr.get_tech_ids()]        
 
-        all_tech_ids = self.dr.get_tech_ids()
-        count = 0
-        for i in all_tech_ids:
-            for j in all_tech_ids:
-                count += 1
-                if np.isnan(ensemble_sim_matrix.loc[i, j]) == True:
-                    ensemble_sim_matrix.loc[i, j] = self.tech_keyword_sim_matrix.loc[i, j]
-                if count % 100000 == 0:
-                    print count
+        # Replace null values of Item based sim matrix with similarity values in Technology keyword sim matrix
+        all_tech_ids = set(self.dr.get_tech_ids())
+        tech_ids_null_set = all_tech_ids - self.tech_id_set_for_item_based        
+        for tech_id in tech_ids_null_set:
+            ensemble_sim_matrix.loc[tech_id] = self.tech_keyword_sim_matrix.loc[tech_id]
+            ensemble_sim_matrix.loc[:, tech_id] = self.tech_keyword_sim_matrix.loc[:, tech_id]
+        
         self.ensemble_sim_matrix = ensemble_sim_matrix
         print "Done."
         print '\n'  

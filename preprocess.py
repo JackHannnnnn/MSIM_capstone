@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import DataReaderplus as dr
 import MySQLdb as mdb
 import numpy as np
 import pandas as pd
@@ -13,7 +12,7 @@ def calculate_score(weights):
     Params
     ------
     weights: list
-        The weights of contact data, clicked data, view data.
+        The weights of contact data, email clicked data, content viewed data.
         
     Returns
     DataFrame
@@ -39,14 +38,14 @@ def calculate_score(weights):
     cur.execute(query)
     rows = cur.fetchall()
     tech_ids = [row[0] for row in rows]
-    orphan_tech_ids = list(set(tech_ids) - set(viewed_tech_ids))
+    orphan_tech_ids = list(set(viewed_tech_ids) - set(tech_ids))
     
     technology_id = viewed_tech_ids
     
     # Add one more column tech id viewed by a user (Mapping)
     activities['technology_id'] = technology_id 
     
-    # Drop column detials 
+    # Drop column details 
     activities = activities.drop('details', 1)
     activities = activities.groupby(["user_id", "technology_id"]).size().reset_index(name = "v_count")
 

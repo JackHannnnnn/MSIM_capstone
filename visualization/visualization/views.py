@@ -2,14 +2,15 @@ from pyramid.view import view_config
 from pyramid.request import Request
 from pyramid.response import Response
 import json
-import DataReaderplus as dr
+import DataReaderViz as dr
 import matchUsers
 
 @view_config(route_name='home', renderer='templates/homepage.jinja2')
 def home_view(request):
     return {'project': 'visualization'}
-    
-@view_config(route_name='university', renderer='templates/university.jinja2')
+
+@view_config(route_name='university',
+             renderer='templates/university.jinja2')
 def university_view(request):
     return {'university': request.matchdict['id']}
 
@@ -19,6 +20,7 @@ def university_data_view(request):
     universityID = request.matchdict['id']
     # retrieve technology ids published by the university
     tech_ids = dataReader.get_techID_by_university(universityID)
+
     if universityID=="all":
         # retrieve count of views on each technology
         tech_views = dataReader.get_user_views(tech_ids)
@@ -39,6 +41,7 @@ def university_data_view(request):
         # find the most relevant users for each technology
         matched_users = matchUsers.find_match(tech_ids)
         response = Response(json.dumps({"tech_views": tech_views, "user_keywords": user_keywords, "tech_keywords": tech_keywords, "viewed_users": viewed_users, "emails": emails, "matches": matched_users}))
+
     response.headerlist.extend(
 		(
 			('Access-Control-Allow-Origin', '*'),
@@ -47,4 +50,7 @@ def university_data_view(request):
 			('Content-Type', 'application/json')
 		)
 	)
-    return response    
+    return response
+
+def all_university_view(request):
+    return {'project': 'visualization'}

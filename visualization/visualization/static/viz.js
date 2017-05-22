@@ -4,30 +4,41 @@ var xmlhttp = new XMLHttpRequest();
 xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         var dat = JSON.parse(this.responseText);
-		techViews_SVG(dat.tech_views) // bar chart
-    emailSentVsClick(dat.emails) // group bar chart
-		userKeywords_SVG(dat.user_keywords)
-		techKeywords_SVG(dat.tech_keywords)
-    matchUsers(dat.matches)
-    viewedusers(dat.viewed_users)
+        if (universityId=="all") {
+           keywords_cloud(dat.keywords) // render keywords cloud  
+          barchart(dat.tech_views) // barchart  for count of views
+          barchart(dat.tech_emails)  //barchart for count of email sent
+             
+        }
+
+        if (universityId!="all") {
+          barchart(dat.tech_views) // barchart
+          emailSentVsClick(dat.emails) // group barchart
+          userKeywords_SVG(dat.user_keywords)
+          techKeywords_SVG(dat.tech_keywords)
+          matchUsers(dat.matches)
+          viewedusers(dat.viewed_users)
+        }
+
     }
 };
 
 var universityId = window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 1);
 xmlhttp.open("GET", window.location.origin + "/university/data/" + universityId, true);
+console.log( window.location.origin + "/university/data/" + universityId)
 xmlhttp.setRequestHeader("Access-Control-Allow-Origin","*");
 xmlhttp.send();
 
 
-function techViews_SVG(techViews) { // generate bar chart based on the count of views on each technology
+function barchart(techData) { // generate bar chart based on the count of views on each technology
 
 
-	console.log(techViews)
+	console.log(techData)
 
   var svgContainer = d3.select("body")
             .append("svg")
-            .attr("height", "400")
-            .attr("width", "600")
+            .attr("height", "1000")
+            .attr("width", "1600")
             .attr("class", "svgContainer")
 
 
@@ -35,7 +46,18 @@ function techViews_SVG(techViews) { // generate bar chart based on the count of 
       width = svgContainer.attr("width") - margin.left - margin.right,
       height = svgContainer.attr("height") - margin.top - margin.bottom;
 
-  
+  var title = svgContainer.append("g")
+              .attr("transform", "translate(" + width/2 + "," + (0 - margin.top /2) + ")");
+
+  title.append("text")
+              .attr("class", "title")
+              .attr("text-anchor", "middle")  
+              .style("font-size", "16px") 
+              .style("text-decoration", "underline")  
+              .attr("dy", ".35em")
+              .attr("fill", "#000")
+              .text("views");
+
 
   var g = svgContainer.append("g")
                       .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); //add a g element that provides a reference point for adding axes
@@ -45,13 +67,13 @@ function techViews_SVG(techViews) { // generate bar chart based on the count of 
   var xScale = d3.scaleBand()
   				.rangeRound([0, width])
   				.padding(.5)
-  				.domain(techViews.map(function(d) { return d.TechID; }));
+  				.domain(techData.map(function(d) { return d.TechID; }));
 
 
   // linear scale function
   var yScale = d3.scaleLinear()
   				.rangeRound([height, 0])
-  				.domain([0, d3.max(techViews, function(d) { return d.Views; })]);
+  				.domain([0, d3.max(techData, function(d) { return d.Count; })]);
 
 
 	//append x axis
@@ -71,15 +93,16 @@ function techViews_SVG(techViews) { // generate bar chart based on the count of 
                .text("Counts")
 
     var bars = g.selectAll("bar")
-      					.data(techViews)
+      					.data(techData)
     						.enter()
     						.append("rect")
     
     var barAttr = bars.attr("class", "bar")
     					.attr("x", function(d) {return xScale(d.TechID); })
     					.attr("width", xScale.bandwidth())
-    					.attr("y", function(d) {return yScale(d.Views); })
-    					.attr("height", function(d){return height - yScale(d.Views); });
+    					.attr("y", function(d) {return yScale(d.Count); })
+    					.attr("height", function(d){return height - yScale(d.Count); });
+
 
 }
 
@@ -89,8 +112,8 @@ function userKeywords_SVG(userKeywords) { // generate circle packing based on th
 
   var svgContainer = d3.select("body")
                         .append("svg")
-                        .attr("height", "600")
-                        .attr("width", "600")
+                        .attr("height", "1000")
+                        .attr("width", "1000")
                         .attr("class", "svgContainer")
 
 
@@ -136,11 +159,11 @@ function techKeywords_SVG(techKeywords){ // generate bubble chart based on the k
 //	console.log(techKeywords.slice(0,10))
      var svgContainer = d3.select("body")
                         .append("svg")
-                        .attr("height", "600")
-                        .attr("width", "600")
+                        .attr("height", "1000")
+                        .attr("width", "1000")
                         .attr("class", "svgContainer");
 
-    var diameter = 600;
+    var diameter = 1000;
     var max_count = d3.max(techKeywords, function(d){
         return d.Count;
     });
@@ -179,10 +202,6 @@ function techKeywords_SVG(techKeywords){ // generate bubble chart based on the k
     .style("font", "12px sans-serif")
     .text("tooltip");
 
-//    node.append("title")
-//            .text(function(d) {
-//                return d.data.keyword + ": " + d.data.Count;
-//            });
 
     node.append("circle")
             .attr("r", function(d) {
@@ -267,8 +286,8 @@ function emailSentVsClick(emailData){ // generate a group bar chart showing coun
 
   var svgContainer = d3.select("body")
             .append("svg")
-            .attr("height", "400")
-            .attr("width", "600")
+            .attr("height", "1000")
+            .attr("width", "1200")
             .attr("class", "svgContainer")
 
 
@@ -383,4 +402,36 @@ function matchUsers(matchUsers){ // add an html table showing the top 5 most rel
       .append("tr")
       .style("line-height", "30px")
       .text(function(d){return d})
+}
+
+function keywords_cloud(keywords){
+  console.log(keywords)
+
+  var fill = d3.scaleOrdinal(d3.schemeCategory20);
+
+  d3.layout.cloud().size([1500, 500])
+          .words(keywords)
+          .padding(5)
+          //.rotate(function() { return ~~(Math.random() * 2) * 90; })
+          .rotate(0)
+          .fontSize(function(d) { return d.size; })
+          .on("end", draw)
+          .start();
+
+    function draw(words) {
+      d3.select("body").append("svg")
+              .attr("width",1550)
+              .attr("height", 500)
+            .append("g")
+              .attr("transform", "translate(600, 250)")
+            .selectAll("text")
+              .data(words)
+              .enter().append("text")
+              .style("font-size", function(d) { return d.size + "px"; })
+              .style("fill", function(d, i) { return fill(i); })
+              .attr("transform", function(d) {
+                  return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              })
+              .text(function(d) { return d.text; });
+  }
 }

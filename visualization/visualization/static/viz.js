@@ -7,8 +7,8 @@ xmlhttp.onreadystatechange = function() {
         if (universityId=="all") { // page for all universities
           keywords_cloud(dat.keywords) // keywords cloud  
           barchart(dat.tech_views, " #9fa9a3", "Count of Views", "600", "1200") // count of views 
-          barchart(dat.tech_emails, "#8d9db6", "Count of Emails Sent", "600", "1200")  //count of email sent
-             
+          barchart(dat.tech_emails, "#8d9db6", "Count of Emails Sent", "600", "1200")  //count of email sent             
+
         }
 
         if (universityId!="all") { // page for university specified by university id
@@ -52,16 +52,15 @@ function barchart(techData, col, title, height, width) { // generate bar chart
       width = svgContainer.attr("width") - margin.left - margin.right,
       height = svgContainer.attr("height") - 3*margin.top - margin.bottom;
 
-
-  svgContainer.append("g")
-              .attr("transform", "translate(" + margin.left + "," + margin.top + ")") 
-              .append("text")
-              .attr("class", "title")
-              .attr("x", width/2)
-              .attr("y", 0 - (margin.top / 2))
-              .attr("dy", "0.5em")
-              .text(title)
-
+  var g = svgContainer.append("g")
+                      .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); //add a g element that provides a reference point for adding axes
+  
+  g.append("text")
+    .attr("class", "title")
+    .attr("x", width/2)
+    .attr("y", 0 - (margin.top / 2))
+    .attr("dy", "0.5em")
+    .text(title);
 	
   var g = svgContainer.append("g")
                       .attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")"); //add a g element that provides a reference point for adding axes
@@ -98,7 +97,7 @@ function barchart(techData, col, title, height, width) { // generate bar chart
                .attr("dy", ".71em")
                .attr("text-anchor", "end")
                .attr("fill", "#000")
-               .text("Counts")
+               .text(title)
 
 // append bars
     var bars = g.selectAll("bar")

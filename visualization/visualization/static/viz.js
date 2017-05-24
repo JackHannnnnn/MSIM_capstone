@@ -97,7 +97,7 @@ function barchart(techData, col, title, height, width) { // generate bar chart
                .attr("dy", ".71em")
                .attr("text-anchor", "end")
                .attr("fill", "#000")
-               .text(title)
+               .text("Counts")
 
 // append bars
     var bars = g.selectAll("bar")

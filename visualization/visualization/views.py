@@ -21,25 +21,20 @@ def university_data_view(request):
     # retrieve technology ids published by the university
     tech_ids = dataReader.get_techID_by_university(universityID)
 
-    if universityID=="all":
-        # retrieve count of views on each technology
-        tech_views = dataReader.get_user_views(tech_ids)
-        tech_emails = dataReader.email_sent_per_tech()
-        contacted_keywords = dataReader.all_contacted_keywords()
+    if universityID=="all": # retrieve data for all university page
+        
+        tech_views = dataReader.get_user_views(tech_ids) # count of views on each technology
+        tech_emails = dataReader.email_sent_per_tech() # count of email sent on each technology
+        contacted_keywords = dataReader.all_contacted_keywords() # keywords frequency of all contacted technologies
         response = Response(json.dumps({"tech_views": tech_views, "tech_emails": tech_emails, "keywords": contacted_keywords}))
     else:
-        # retrieve count of views on each technology
-        tech_views = dataReader.get_user_views(tech_ids)
-        # retrieve top keywords of users viewing the technology
-        user_keywords = dataReader.get_user_keywords_of_viewed_tech(tech_ids, universityID)
-        # retrieve all keywords across all technologies
-        tech_keywords = dataReader.get_tech_keywords(tech_ids)
-        # retrieve company ids which viewed the technology
-        viewed_users = dataReader.get_tech_viewed_user(tech_ids)
-        # retrieve email sent vs clicks per technology
-        emails = dataReader.email_sent_vs_click(tech_ids)
-        # find the most relevant users for each technology
-        matched_users = matchUsers.find_match(tech_ids)
+        
+        tech_views = dataReader.get_user_views(tech_ids) # count of views on each technology
+        user_keywords = dataReader.get_user_keywords_of_viewed_tech(tech_ids, universityID) # top keywords of users viewing the technology
+        tech_keywords = dataReader.get_tech_keywords(tech_ids) # all keywords across all technologies
+        viewed_users = dataReader.get_tech_viewed_user(tech_ids) # company ids which viewed the technology
+        emails = dataReader.email_sent_vs_click(tech_ids) # email sent vs clicks per technology
+        matched_users = matchUsers.find_match(tech_ids) # sthe most relevant users for each technology
         response = Response(json.dumps({"tech_views": tech_views, "user_keywords": user_keywords, "tech_keywords": tech_keywords, "viewed_users": viewed_users, "emails": emails, "matches": matched_users}))
 
     response.headerlist.extend(

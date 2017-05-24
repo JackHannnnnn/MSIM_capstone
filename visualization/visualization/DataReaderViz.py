@@ -231,7 +231,7 @@ class DataReader(object):
         self.cur.execute(query)
         rows = self.cur.fetchall()
         for row in rows:
-            emails.append({"Technology": row[0], "Emails Sent": row[1], "Emails Clicked": row[2]})
+            emails.append({"Technology": row[0], "Sent": row[1], "Clicked": row[2]})
         return emails
 
 

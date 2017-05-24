@@ -6,7 +6,6 @@ import sys
 
 def find_match(tech_ids):
 	match = []
-	#tech_ids = ["225", "226", "301", "318", "816"]
 	dataReader = dr.DataReader()
 	all_users = dataReader.get_user_id() # get all users from the database
 	all_keywords= dataReader.get_all_keywords() # get all keywords from the database

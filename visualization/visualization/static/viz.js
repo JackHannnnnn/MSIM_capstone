@@ -6,13 +6,14 @@ xmlhttp.onreadystatechange = function() {
         var dat = JSON.parse(this.responseText);
         if (universityId=="all") {
            keywords_cloud(dat.keywords) // render keywords cloud  
-          barchart(dat.tech_views) // barchart  for count of views
-          barchart(dat.tech_emails)  //barchart for count of email sent
+          barchart(dat.tech_views, 'count') // barchart  for count of views
+          barchart(dat.tech_emails, 'Email Sent')  //barchart for count of
+//          email sent
              
         }
 
         if (universityId!="all") {
-          barchart(dat.tech_views) // barchart
+          barchart(dat.tech_views, 'count') // barchart
           emailSentVsClick(dat.emails) // group barchart
           userKeywords_SVG(dat.user_keywords)
           techKeywords_SVG(dat.tech_keywords)
@@ -31,15 +32,16 @@ xmlhttp.setRequestHeader("Access-Control-Allow-Origin","*");
 xmlhttp.send();
 
 
-function barchart(techData) { // generate bar chart based on the count of views on each technology
+function barchart(techData, y_axis) { // generate bar chart based on the count
+// of views on each technology
 
 
 	console.log(techData)
 
   var svgContainer = d3.select("body")
             .append("svg")
-            .attr("height", "1000")
-            .attr("width", "1600")
+            .attr("height", "500")
+            .attr("width", "1200")
             .attr("class", "svgContainer")
 
 
@@ -57,7 +59,7 @@ function barchart(techData) { // generate bar chart based on the count of views 
               .style("text-decoration", "underline")  
               .attr("dy", ".35em")
               .attr("fill", "#000")
-              .text("views");
+              .text(y_axis);
 
 
   var g = svgContainer.append("g")
@@ -91,7 +93,7 @@ function barchart(techData) { // generate bar chart based on the count of views 
                .attr("dy", ".71em")
                .attr("text-anchor", "end")
                .attr("fill", "#000")
-               .text("Counts")
+               .text(y_axis)
 
     var bars = g.selectAll("bar")
       					.data(techData)

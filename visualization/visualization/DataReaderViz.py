@@ -272,10 +272,7 @@ class DataReader(object):
 			A list of dictionary with the key being the technology ID and the value being the count of email sent for the technology
     	"""
     	email_sent = []
-    	query17 = "SELECT T.technology_id, count(E.user_id) as SENT FROM emails AS E " \
-                  "LEFT JOIN email_technologies AS T " \
-                  "ON E.id = T.email_id " \
-                  "GROUP BY T.technology_id ORDER BY SENT DESC LIMIT 50"
+    	query17 = "SELECT T.technology_id, count(E.user_id) as SENT FROM emails AS E LEFT JOIN email_technologies AS T ON E.id = T.email_id GROUP BY T.technology_id Having T.technology_id is not null ORDER BY SENT DESC LIMIT 50"
     	self.cur.execute(query17)
     	rows = self.cur.fetchall()
     	for row in rows:

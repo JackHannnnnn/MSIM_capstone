@@ -5,24 +5,13 @@ xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         var dat = JSON.parse(this.responseText);
         if (universityId=="all") {
-           keywords_cloud(dat.keywords) // render keywords cloud  
-<<<<<<< HEAD
-          barchart(dat.tech_views, 'count') // barchart  for count of views
-          barchart(dat.tech_emails, 'Email Sent')  //barchart for count of
-//          email sent
-=======
+           keywords_cloud(dat.keywords) // render keywords cloud
           barchart(dat.tech_views, "steelblue", "Count of Views", "600", "1200") // barchart  for count of views
           barchart(dat.tech_emails, "#73C774", "Count of Emails Sent", "600", "1200")  //barchart for count of email sent
->>>>>>> f9b59dd11f06a9807b082af9f353fec5337515fb
-             
         }
 
         if (universityId!="all") {
-<<<<<<< HEAD
-          barchart(dat.tech_views, 'count') // barchart
-=======
           barchart(dat.tech_views, "steelblue", "Count of Views", "400", "800") // barchart
->>>>>>> f9b59dd11f06a9807b082af9f353fec5337515fb
           emailSentVsClick(dat.emails) // group barchart
           userKeywords_SVG(dat.user_keywords)
           techKeywords_SVG(dat.tech_keywords)
@@ -41,12 +30,7 @@ xmlhttp.setRequestHeader("Access-Control-Allow-Origin","*");
 xmlhttp.send();
 
 
-<<<<<<< HEAD
-function barchart(techData, y_axis) { // generate bar chart based on the count
-// of views on each technology
-=======
 function barchart(techData, col, title, height, width) { // generate bar chart based on the count of views on each technology
->>>>>>> f9b59dd11f06a9807b082af9f353fec5337515fb
 
 
 	//console.log(techData)
@@ -58,34 +42,13 @@ function barchart(techData, col, title, height, width) { // generate bar chart b
   
   var svgContainer = d3.select("body")
             .append("svg")
-<<<<<<< HEAD
-            .attr("height", "500")
-            .attr("width", "1200")
-=======
             .attr("height", height)
             .attr("width", width)
->>>>>>> f9b59dd11f06a9807b082af9f353fec5337515fb
             .attr("class", "svgContainer")
 
   var margin = {top: 20, right: 20, bottom: 30, left: 40},
       width = svgContainer.attr("width") - margin.left - margin.right,
       height = svgContainer.attr("height") - margin.top - margin.bottom;
-
-<<<<<<< HEAD
-  var title = svgContainer.append("g")
-              .attr("transform", "translate(" + width/2 + "," + (0 - margin.top /2) + ")");
-
-  title.append("text")
-              .attr("class", "title")
-              .attr("text-anchor", "middle")  
-              .style("font-size", "16px") 
-              .style("text-decoration", "underline")  
-              .attr("dy", ".35em")
-              .attr("fill", "#000")
-              .text(y_axis);
-
-=======
->>>>>>> f9b59dd11f06a9807b082af9f353fec5337515fb
 
   var g = svgContainer.append("g")
                       .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); //add a g element that provides a reference point for adding axes
@@ -123,7 +86,7 @@ function barchart(techData, col, title, height, width) { // generate bar chart b
                .attr("dy", ".71em")
                .attr("text-anchor", "end")
                .attr("fill", "#000")
-               .text(y_axis)
+               .text(title)
 
     var bars = g.selectAll("bar")
       					.data(techData)

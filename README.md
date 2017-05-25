@@ -3,7 +3,7 @@ This repository holds the code for MSIM capstone project.
 
 ## Instructions on running recommendation code
 
-The processes below assume that your database is on your localhost. The database schema is the same as in the **capstone-MM-DD-YYYY.sql** file you provided with us.
+The processes below assume that your database is on your localhost. The database schema is the same as in the **capstone-MM-DD-YYYY.sql** file.
 
 The recommendation algorithm is written in **Python 2.7**. Please execute them in **Python2 environment**.
 
@@ -77,3 +77,36 @@ Done
 ```sql
 select * from recommendationresultfortechs;
 ```
+
+## Instructions on accessing dashboard
+The processes below assume that your database is on your localhost. The database schema is the same as in the **capstone-MM-DD-YYYY.sql** file.
+
+We are using **Pyramid** web framework under **Python 2.7**. Please install Pyramid by executing:
+```
+pip install "pyramid==1.8.3"
+```
+
+1. Navigate to ``../MSIM_capstone/visualization/visualization``. Open ``DataReaderViz.py`` and replace the parameters **host**, **user**, **passwd** and **db** in line 9 with your own information.
+
+2. Change your working directory to ``../MSIM_capstone/visualization``.
+
+3. If you are first time user, run the code below in terminal. Make sure you are using python2 environment.
+```
+python setup.py develop
+```
+If you are not first time user, feel free to skip this step.
+
+4. Run the code below to setup local host.
+```
+pserve development.ini
+```
+
+5. Open browser and enter the url below to access dashboards:
+  * If you are trying to access graphs for an university with specific university_id, use the url below
+  ```
+  http://localhost:6543/university/university_id
+  ```
+  * If you want to access all universities level graphs, use the url below:
+  ```
+  http://localhost:6543/university/all
+  ```

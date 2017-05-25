@@ -90,11 +90,11 @@ pip install "pyramid==1.8.3"
 
 2. Change your working directory to ``../MSIM_capstone/visualization``.
 
-3. If you are first time user, run the code below in terminal. Make sure you are using python2 environment.
+3. If you are first time user, run the code below in terminal. Make sure you are under **Python2 environment**. If you are not first time user, feel free to skip this step.
 ```
 python setup.py develop
 ```
-If you are not first time user, feel free to skip this step.
+
 
 4. Run the code below to setup local host.
 ```
@@ -102,11 +102,11 @@ pserve development.ini
 ```
 
 5. Open browser and enter the url below to access dashboards:
-  * If you are trying to access graphs for an university with specific university_id, use the url below
+  * If you are trying to access graphs for **an university** with specific university_id, use the URL below
   ```
   http://localhost:6543/university/university_id
   ```
-  * If you want to access all universities level graphs, use the url below:
+  * If you want to access **all universities level** graphs, use the URL below:
   ```
   http://localhost:6543/university/all
   ```
